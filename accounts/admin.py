@@ -15,6 +15,7 @@ class CustomerForm(forms.ModelForm):
             "phone",
         )
         required = ("first_name",)
+     
 
 
 class DriverForm(forms.ModelForm):
@@ -27,12 +28,14 @@ class DriverForm(forms.ModelForm):
             "phone",
         )
         required = ("first_name",)
+       
 
 
 class CustomerAdmin(admin.ModelAdmin):
     form = CustomerForm
     list_display = ("phone", "first_name", "last_name", "is_customer")
     list_filter = ("date_joined",)
+    ordering=['date_joined']
     search_fields = ("phone", "first_name", "last_name", "email")
 
 
