@@ -56,7 +56,7 @@ class MyUser(AbstractBaseUser):
 
     def __str__(self) -> str:
         if not self.email:
-            return f"{self.first_name} {self.last_name}"
+            return f"{self.first_name} {self.last_name if self.last_name  else ''}"
         return self.email
 
     # this methods are require to login super user from admin panel
@@ -79,6 +79,10 @@ class Customer(MyUser):
         return super().save(*args, **kwargs)
 
 
+class CustomerProfile(models.Model):
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    is_business = models.BooleanField(default=False)
+
 class Driver(MyUser):
     class Meta:
         proxy = True
@@ -88,3 +92,11 @@ class Driver(MyUser):
     def save(self, *args, **kwargs) -> None:
         self.is_driver = True
         return super().save(*args, **kwargs)
+
+class DriverProfile(models.Model):
+    driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
+    address =  models.TextField()
+    license_number = models.CharField(max_length=50, null=True, blank=True)
+    aadhaar_number = models.CharField(max_length=20, null=True, blank=True)
+    is_avaliable = models.BooleanField(default=False)
+    
