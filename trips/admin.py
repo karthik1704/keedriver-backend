@@ -1,16 +1,65 @@
 from django.contrib import admin
-from django.forms import ChoiceField
+from django import forms
+from django.http import HttpResponseRedirect
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory, MoveNodeForm
 from .models import Trip, TripType
+from .utils import gernerate_message
+from datetime import datetime
+from django.utils import timezone
+
+from dal import autocomplete
+import pywhatkit
 
 # Register your models here.
 class MyNodeForm(MoveNodeForm):
     class Meta:
         model = TripType
-        exclude = ('sib_order', 'parent')
+        exclude = ("sib_order", "parent")
+
+
+class TripForm(forms.ModelForm):
+    driver_based_on_loaction = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={"checked": True}),
+        label="Driver Based location",
+        help_text="This will turn on/off location based on driver selection",
+        required=False,
+    )
+
+    class Meta:
+        model = Trip
+        fields = "__all__"
+        widgets = {
+            "driver": autocomplete.ModelSelect2(
+                "driver-autocomplete",
+                forward=["pickup_area", "driver_based_on_loaction"],
+            )
+        }
+
+
+# trip actions
+@admin.action(description="Mark selected trip as completed")
+def make_trip_completed(modeladmin, request, queryset):
+    queryset.update(trip_status="COMPLETED", drop_time=timezone.now())
+
+
+@admin.action(description="Mark selected trip amount as paid")
+def make_amount_paid(modeladmin, request, queryset):
+    queryset.update(amount_status="PAID")
+
+
+@admin.action(description="Mark selected trip as completed and amount as paid")
+def make_trip_completed_amount_paid(modeladmin, request, queryset):
+    queryset.update(
+        trip_status="COMPLETED", drop_time=timezone.now(), amount_status="PAID"
+    )
+
 
 class TripAdmin(admin.ModelAdmin):
+    change_form_template = "admin/change_form1.html"
+
+    form = TripForm
+
     list_display = (
         "customer",
         "customer_contact",
@@ -22,11 +71,12 @@ class TripAdmin(admin.ModelAdmin):
         "amount",
         "amount_status",
     )
-    search_fields = ['customer_phone']
-    autocomplete_fields = ['customer', 'driver']
-    readonly_fields = ("created_at", "updated_at")
-    list_filter = ('trip_status',)
-    ordering=("trip_status",)
+    search_fields = ["customer_phone"]
+    autocomplete_fields = ["customer"]
+    readonly_fields = ("created_at", "updated_at", "drop_time")
+    list_filter = ("trip_status", "amount_status")
+    ordering = ("trip_status",)
+    actions = (make_trip_completed, make_amount_paid, make_trip_completed_amount_paid)
 
     fieldsets = (
         ("Customer", {"fields": ("customer",)}),
@@ -35,6 +85,7 @@ class TripAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "trip_type",
+                    "pickup_area",
                     "pickup_location",
                     "pickup_time",
                     "drop_location",
@@ -45,17 +96,11 @@ class TripAdmin(admin.ModelAdmin):
         ),
         (
             "Driver Details",
-            {"fields": ("driver",)},
+            {"fields": ("driver", "driver_based_on_loaction")},
         ),
         (
             "Payment Details / Status",
-            {
-                "fields": (
-                    "amount",
-                    "amount_status",
-                    "trip_status"
-                )
-            },
+            {"fields": ("amount", "amount_status", "trip_status")},
         ),
     )
 
@@ -77,14 +122,59 @@ class TripAdmin(admin.ModelAdmin):
 
         return formfield
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'trip_type':
-            CHOICES = MoveNodeForm.mk_dropdown_tree(TripType)
-            return ChoiceField(choices=CHOICES)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == 'trip_type':
+    #         CHOICES = MoveNodeForm.mk_dropdown_tree(TripType)
+    #         return ChoiceField(choices=CHOICES)
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    # @admin.action(description='Mark selected trip as completed')
+    # def make_published(modeladmin, request, queryset):
+    #     queryset.update(trip_status='COMPLETED', drop_time=timezone.now())
+
+    def save_model(self, request, obj, form, change):
+        # drop_time  = form.cleaned_data.get('drop_time')
+        trip_status = form.cleaned_data.get("trip_status")
+        if not obj.drop_time:  # type: ignore
+            if trip_status == "COMPLETED":
+                obj.drop_time = timezone.now()  # type: ignore
+        super().save_model(request, obj, form, change)
+
+    def response_change(self, request, obj):
+
+        data = self.get_queryset(request).get(pk=obj.pk)
+        date = datetime.strftime(data.pickup_time, " %d/%m/%y")
+        time = datetime.strftime(data.pickup_time, "%H:%M ")
+        message = gernerate_message(
+            data.customer.get_full_name(),
+            data.customer.phone,
+            data.trip_type.name,
+            data.drop_location,
+            date,
+            time,
+            data.driver.get_full_name(),
+            data.driver.phone,
+        )
+
+        if "_wacustomer" in request.POST:
+
+            pywhatkit.sendwhatmsg_instantly(f"+91{data.customer.phone}", message) # type: ignore
+
+            self.message_user(request, "messgae sent successfully")
+            return HttpResponseRedirect(".")
+
+        if "_wadriver" in request.POST:
+            pywhatkit.sendwhatmsg_instantly(f"+91{data.driver.phone}", message) # type: ignore
+
+            self.message_user(request, "messgae sent successfully")
+            return HttpResponseRedirect(".")
+
+        return super().response_change(request, obj)
+
 
 # CHOICES = MoveNodeForm.mk_dropdown_tree(Category)
 # category = ChoiceField(choices=CHOICES)
+
 
 class TripTypeAdmin(TreeAdmin):
     readonly_fields = ("slug", "created_at", "updated_at")
