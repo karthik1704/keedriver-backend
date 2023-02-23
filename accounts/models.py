@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .managers import CustomerManager, CustomUserManager, DriverManager
-
+from areas.models import Area
 
 # Create your models here.
 class MyUser(AbstractBaseUser):
@@ -46,7 +46,7 @@ class MyUser(AbstractBaseUser):
     #     return self.EMAIL_FIELD
 
     def get_full_name(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name if self.last_name  else ''}"
 
     def get_short_name(self):
         return self.first_name
@@ -55,9 +55,9 @@ class MyUser(AbstractBaseUser):
     #     return self.username
 
     def __str__(self) -> str:
-        if not self.email:
-            return f"{self.first_name} {self.last_name if self.last_name  else ''}"
-        return self.email
+    
+        return f"{self.first_name} {self.last_name if self.last_name  else ''}"
+
 
     # this methods are require to login super user from admin panel
     def has_perm(self, perm, obj=None):
@@ -96,7 +96,10 @@ class Driver(MyUser):
 class DriverProfile(models.Model):
     driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
     address =  models.TextField()
+    area= models.ManyToManyField(Area,)
     license_number = models.CharField(max_length=50, null=True, blank=True)
     aadhaar_number = models.CharField(max_length=20, null=True, blank=True)
     is_avaliable = models.BooleanField(default=False)
     
+    def __str__(self):
+        return self.driver.get_full_name()

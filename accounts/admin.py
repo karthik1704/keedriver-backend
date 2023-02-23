@@ -1,10 +1,18 @@
 from django import forms
 from django.contrib import admin
 
-from .models import Customer, Driver, MyUser
+from .models import Customer, Driver, MyUser, DriverProfile, CustomerProfile
 
 
 # Register your models here.
+
+class CustomerProfileAdmin(admin.ModelAdmin):
+    model=CustomerProfile
+
+
+class DriverProfileAdmin(admin.StackedInline):
+    model=DriverProfile
+
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
@@ -15,6 +23,7 @@ class CustomerForm(forms.ModelForm):
             "phone",
         )
         required = ("first_name",)
+        
      
 
 
@@ -38,6 +47,12 @@ class CustomerAdmin(admin.ModelAdmin):
     ordering=['date_joined']
     search_fields = ("phone", "first_name", "last_name", "email")
 
+    def get_inlines(self, request, obj=None):
+        if obj:
+            return [CustomerProfileAdmin]
+        else:
+            return []
+
 
 class DriverAdmin(admin.ModelAdmin):
     form = DriverForm
@@ -45,6 +60,11 @@ class DriverAdmin(admin.ModelAdmin):
     list_filter = ("date_joined",)
     search_fields = ("phone", "first_name", "last_name", "email")
 
+    def get_inlines(self, request, obj=None):
+        if obj:
+            return [DriverProfileAdmin]
+        else:
+            return []
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (
