@@ -61,6 +61,7 @@ class TripAdmin(admin.ModelAdmin):
     form = TripForm
 
     list_display = (
+        "trip_id",
         "customer",
         "customer_contact",
         "pickup_location",
@@ -71,7 +72,7 @@ class TripAdmin(admin.ModelAdmin):
         "amount",
         "amount_status",
     )
-    search_fields = ["customer_phone"]
+    search_fields = ["customer_phone", "trip_id"]
     autocomplete_fields = ["customer"]
     readonly_fields = ("created_at", "updated_at", "drop_time")
     list_filter = ("trip_status", "amount_status")

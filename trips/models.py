@@ -2,11 +2,14 @@ from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify
 
+from django.utils import timezone
+
 
 from treebeard.mp_tree import MP_Node
 from django.utils.safestring import mark_safe
 from accounts.models import Customer, Driver
 from areas.models import Area
+
 
 # Create your models here.
 class TripType(MP_Node):
@@ -18,7 +21,7 @@ class TripType(MP_Node):
     node_order_by = ["name"]
 
     def __str__(self):
-        return '%s%s' % ( ''if self.depth==1 else '--' * self.depth, self.name)
+        return "%s%s" % ("" if self.depth == 1 else "--" * self.depth, self.name)
 
     def save(self, *args, **kwargs) -> None:
         if not self.slug or self.slug != self.name:
@@ -39,7 +42,13 @@ TRIP_STATUS = [
 
 
 class Trip(models.Model):
-
+    # Trip id "KD" prefix ,follow by current year and trip primary key
+    trip_id = models.CharField(
+        unique=True,
+        editable=False,
+        max_length=250,
+        default=f"KD{timezone.now().strftime('%Y')}{id}",
+    )
     customer = models.ForeignKey(
         Customer, related_name="customer", on_delete=models.DO_NOTHING
     )
@@ -70,4 +79,6 @@ class Trip(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.customer.first_name
+        return f"{self.trip_id} - {self.customer.get_full_name()}"
+    
+   
