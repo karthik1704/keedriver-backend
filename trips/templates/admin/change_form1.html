@@ -1,8 +1,23 @@
 {% extends "admin/change_form.html" %} 
 {% block submit_buttons_bottom %}
-<div class="submit-row">
-  <input type="submit" value="WA Customer" name="_wacustomer" />
-  <input type="submit" value="WA Driver" name="_wadriver" />
+<div class="submit-row" style="padding-bottom: 20px;">
+  
+  <input type="hidden" class="default" >
+  <a
+    href="https://wa.me/{{customer}}/?text={{c_message}}"
+    target="_blank"
+    class="button "
+    style=" line-height: 15px; margin: 0 0 5px 5px; padding: 10px 15px;"
+    
+    >WA Customer</a
+  >
+  <a
+    href="https://wa.me/{{driver}}/?text={{d_message}}"
+    target="_blank"
+    class="button"
+    style=" line-height: 15px; margin: 12px 0 5px 5px; padding: 10px 15px; "
+    >WA Driver</a
+  >
 </div>
 {{ block.super }} 
 {% endblock %}

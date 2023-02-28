@@ -13,6 +13,7 @@ import pywhatkit
 
 from wallets.models import DriverWalletTransaction
 
+
 # Register your models here.
 class MyNodeForm(MoveNodeForm):
     class Meta:
@@ -49,8 +50,8 @@ def make_trip_completed(modeladmin, request, queryset):
 def make_amount_paid(modeladmin, request, queryset):
     for obj in queryset:
         if obj.amount_status != "PAID":
-            obj.amount_status="PAID"
-            obj.save(update_fields=['amount_status'])
+            obj.amount_status = "PAID"
+            obj.save(update_fields=["amount_status"])
         obj.save()
 
 
@@ -61,14 +62,13 @@ def make_trip_completed_amount_paid(modeladmin, request, queryset):
     # )
 
     for obj in queryset:
-        if obj.trip_status!="COMPLETED":
-            obj.trip_status="COMPLETED"
-            obj.drop_time=timezone.now()
+        if obj.trip_status != "COMPLETED":
+            obj.trip_status = "COMPLETED"
+            obj.drop_time = timezone.now()
         if obj.amount_status != "PAID":
-            obj.amount_status="PAID"
-            obj.save(update_fields=['amount_status'])
+            obj.amount_status = "PAID"
+            obj.save(update_fields=["amount_status"])
         obj.save()
-
 
 
 class TripAdmin(admin.ModelAdmin):
@@ -158,45 +158,55 @@ class TripAdmin(admin.ModelAdmin):
             if trip_status == "COMPLETED":
                 obj.drop_time = timezone.now()  # type: ignore
 
-        update_fields= []
+        update_fields = []
 
         if change:
-             if form.initial['amount_status'] != form.cleaned_data['amount_status']:
-                update_fields.append('amount_status')
-                 
-        super().save_model(request, obj, form, change)  
+            if form.initial["amount_status"] != form.cleaned_data["amount_status"]:
+                update_fields.append("amount_status")
+
+        super().save_model(request, obj, form, change)
         obj.save(update_fields=update_fields)
 
-    def response_change(self, request, obj):
+    def change_view(self, request, object_id, form_url="", extra_content={}):
+        print(object_id)
+        data = self.get_queryset(request).get(pk=object_id)
 
-        data = self.get_queryset(request).get(pk=obj.pk)
-        date = datetime.strftime(data.pickup_time, " %d/%m/%y")
-        time = datetime.strftime(data.pickup_time, "%H:%M ")
-        message = gernerate_message(
-            data.customer.get_full_name(),
-            data.customer.phone,
-            data.trip_type.name,
-            data.drop_location,
-            date,
-            time,
-            data.driver.get_full_name(),
-            data.driver.phone,
-        )
+        if data:
+            date = datetime.strftime(data.pickup_time, " %d/%m/%y")
+            time = datetime.strftime(data.pickup_time, "%H:%M ")
+            c_message = gernerate_message(
+                data.customer.get_full_name(),
+                data.customer.phone,
+                data.trip_type.name,
+                data.drop_location,
+                date,
+                time,
+                data.driver.get_full_name(),
+                data.driver.phone,
+                data.trip_id,
+                data.pickup_location,
+                False
+            )
+            d_message = gernerate_message(
+                data.customer.get_full_name(),
+                data.customer.phone,
+                data.trip_type.name,
+                data.drop_location,
+                date,
+                time,
+                data.driver.get_full_name(),
+                data.driver.phone,
+                data.trip_id,
+                data.pickup_location,
+                True
+            )
+            extra_content.update({"c_message": c_message})
+            extra_content.update({"d_message": d_message})
+            extra_content.update({"customer": f"+91{data.customer.phone}"})
+            extra_content.update({"driver": f"+91{data.driver.phone}"})
 
-        if "_wacustomer" in request.POST:
+        return super().change_view(request, object_id, form_url, extra_content)
 
-            pywhatkit.sendwhatmsg_instantly(f"+91{data.customer.phone}", message) # type: ignore
-
-            self.message_user(request, "messgae sent successfully")
-            return HttpResponseRedirect(".")
-
-        if "_wadriver" in request.POST:
-            pywhatkit.sendwhatmsg_instantly(f"+91{data.driver.phone}", message) # type: ignore
-
-            self.message_user(request, "messgae sent successfully")
-            return HttpResponseRedirect(".")
-
-        return super().response_change(request, obj)
 
 
 # CHOICES = MoveNodeForm.mk_dropdown_tree(Category)
