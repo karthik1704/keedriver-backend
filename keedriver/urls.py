@@ -17,6 +17,10 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from trips.views import DriverAutocomplete
 
+admin.site.site_header  =  "Kee Driver "  
+admin.site.site_title  =  "Kee Driver Dashboard"
+admin.site.index_title  =  "Kee Driver Admin"
+
 urlpatterns = [
     re_path(
         r"^driver-autocomplete/$",
