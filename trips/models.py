@@ -3,7 +3,7 @@ from django.conf import settings
 from django.template.defaultfilters import slugify
 
 from django.utils import timezone
-
+import decimal
 
 from treebeard.mp_tree import MP_Node
 from django.utils.safestring import mark_safe
@@ -40,6 +40,8 @@ TRIP_STATUS = [
     ("CANCELLED", "Cancelled"),
 ]
 
+DEDUCTION_PERCENTAGE  = decimal.Decimal(10.00)
+
 
 class Trip(models.Model):
     # Trip id "KD" prefix ,follow by current year and trip primary key
@@ -47,7 +49,6 @@ class Trip(models.Model):
         unique=True,
         editable=False,
         max_length=250,
-        default=f"KD{timezone.now().strftime('%Y')}{id}",
     )
     customer = models.ForeignKey(
         Customer, related_name="customer", on_delete=models.DO_NOTHING
@@ -70,7 +71,7 @@ class Trip(models.Model):
     drop_time = models.DateTimeField(blank=True, null=True)
     landmark = models.CharField(max_length=255, blank=True, null=True)
 
-    amount = models.DecimalField(max_digits=19, decimal_places=4)
+    amount = models.DecimalField(max_digits=19, decimal_places=2)
     amount_status = models.CharField(
         choices=PAYMENT_STATUS, default="NOT PAID", max_length=150
     )

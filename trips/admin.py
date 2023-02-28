@@ -11,6 +11,8 @@ from django.utils import timezone
 from dal import autocomplete
 import pywhatkit
 
+from wallets.models import DriverWalletTransaction
+
 # Register your models here.
 class MyNodeForm(MoveNodeForm):
     class Meta:
@@ -45,14 +47,28 @@ def make_trip_completed(modeladmin, request, queryset):
 
 @admin.action(description="Mark selected trip amount as paid")
 def make_amount_paid(modeladmin, request, queryset):
-    queryset.update(amount_status="PAID")
+    for obj in queryset:
+        if obj.amount_status != "PAID":
+            obj.amount_status="PAID"
+            obj.save(update_fields=['amount_status'])
+        obj.save()
 
 
 @admin.action(description="Mark selected trip as completed and amount as paid")
 def make_trip_completed_amount_paid(modeladmin, request, queryset):
-    queryset.update(
-        trip_status="COMPLETED", drop_time=timezone.now(), amount_status="PAID"
-    )
+    # queryset.update(
+    #     trip_status="COMPLETED", drop_time=timezone.now(), amount_status="PAID"
+    # )
+
+    for obj in queryset:
+        if obj.trip_status!="COMPLETED":
+            obj.trip_status="COMPLETED"
+            obj.drop_time=timezone.now()
+        if obj.amount_status != "PAID":
+            obj.amount_status="PAID"
+            obj.save(update_fields=['amount_status'])
+        obj.save()
+
 
 
 class TripAdmin(admin.ModelAdmin):
@@ -135,11 +151,21 @@ class TripAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         # drop_time  = form.cleaned_data.get('drop_time')
+
         trip_status = form.cleaned_data.get("trip_status")
+        amount_status = form.cleaned_data.get("amount_status")
         if not obj.drop_time:  # type: ignore
             if trip_status == "COMPLETED":
                 obj.drop_time = timezone.now()  # type: ignore
-        super().save_model(request, obj, form, change)
+
+        update_fields= []
+
+        if change:
+             if form.initial['amount_status'] != form.cleaned_data['amount_status']:
+                update_fields.append('amount_status')
+                 
+        super().save_model(request, obj, form, change)  
+        obj.save(update_fields=update_fields)
 
     def response_change(self, request, obj):
 
