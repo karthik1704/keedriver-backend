@@ -9,7 +9,6 @@ from datetime import datetime
 from django.utils import timezone
 
 from dal import autocomplete
-import pywhatkit
 
 from wallets.models import DriverWalletTransaction
 
