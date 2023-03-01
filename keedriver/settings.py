@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "trips",
     "areas",
-    "wallets"
+    "wallets",
 ]
 
 MIDDLEWARE = [
@@ -95,12 +95,17 @@ if DEBUG:
 
 if not DEBUG:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'OPTIONS': {
-                'service': 'kee_driver_service',
-                'passfile': '.my_pgpass',
-            },
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "keedriver",
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            "HOST": "localhost",
+            "PORT": "5432",
+            # 'OPTIONS': {
+            #     'service': 'kee_driver_service',
+            #     'passfile': '.my_pgpass',
+            # },
         }
     }
 
@@ -137,13 +142,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / "static"
 STATIC_URL = "static/"
 
 # Base url to serve media files
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 # Path where media is stored
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_ROOT = BASE_DIR / "media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
