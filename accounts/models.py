@@ -76,7 +76,7 @@ class Customer(MyUser):
 
     def save(self, *args, **kwargs) -> None:
         self.is_customer = True
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class CustomerProfile(models.Model):
@@ -91,12 +91,12 @@ class Driver(MyUser):
 
     def save(self, *args, **kwargs) -> None:
         self.is_driver = True
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 class DriverProfile(models.Model):
     driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
-    address =  models.TextField()
-    area= models.ManyToManyField(Area,)
+    address =  models.TextField(blank=True, null=True,)
+    area= models.ManyToManyField(Area,blank=True)
     license_number = models.CharField(max_length=50, null=True, blank=True)
     aadhaar_number = models.CharField(max_length=20, null=True, blank=True)
     is_avaliable = models.BooleanField(default=False)

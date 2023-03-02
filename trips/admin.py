@@ -172,7 +172,7 @@ class TripAdmin(admin.ModelAdmin):
 
         if data:
             date = data.pickup_time.strftime("%d/%m/%y")
-            time = data.pickup_time.strftime("%H:%M ")
+            time = data.pickup_time.strftime("%I:%M %p")
             c_message = gernerate_message(
                 data.customer.get_full_name(),
                 data.customer.phone,
