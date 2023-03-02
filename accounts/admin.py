@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
+from django.contrib.auth.models import Group
 
 from .models import Customer, Driver, MyUser, DriverProfile, CustomerProfile
 
@@ -66,9 +68,11 @@ class DriverAdmin(admin.ModelAdmin):
         else:
             return []
 
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(AuthUserAdmin):
+    model = MyUser
     list_display = (
         "phone",
+        "username",
         "first_name",
         "last_name",
         "is_staff",
@@ -83,8 +87,45 @@ class UserAdmin(admin.ModelAdmin):
         "is_driver",
         "is_customer",
     )
+
+    filter_horizontal = ()
+    list_filter = ()
+    fieldsets = (
+        ('Account Information', {
+            'fields': ('username','phone','email',  'password'),
+        }),
+        ('Personal Information', {
+            'fields': ('first_name','last_name', 'country'),
+        }),
+        ('Permissions', {
+            'fields': ('is_active','is_staff','is_superuser',"is_driver",
+        "is_customer",),
+        }),
+         ('Log Information', {
+            'fields': ("last_login",'date_joined',),
+        })
+    )
+
+    add_fieldsets = (
+        (None, {
+            'fields': ('username','email', 'phone', 'password1', 'password2'),
+        }),
+        ('Personal Information', {
+            'fields': ('first_name','last_name', 'country'),
+        }),
+        ('Permissions', {
+            'fields': ('is_active','is_staff','is_superuser',"is_driver",
+        "is_customer",),
+        }),
+    )
+    
+    readonly_fields= ("last_login",'date_joined')
     search_fields = ("phone", "first_name", "last_name", "email")
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(UserAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['username'].required = True
+        return form
 
 admin.site.register(MyUser, UserAdmin)
 admin.site.register(Customer, CustomerAdmin)

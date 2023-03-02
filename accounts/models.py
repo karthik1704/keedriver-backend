@@ -1,6 +1,6 @@
 from typing import Iterable, Optional
 
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -8,7 +8,7 @@ from .managers import CustomerManager, CustomUserManager, DriverManager
 from areas.models import Area
 
 # Create your models here.
-class MyUser(AbstractBaseUser):
+class MyUser(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(
         _("Username"), unique=True, blank=True, null=True, max_length=250
     )
