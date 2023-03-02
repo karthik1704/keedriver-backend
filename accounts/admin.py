@@ -99,7 +99,7 @@ class UserAdmin(AuthUserAdmin):
         }),
         ('Permissions', {
             'fields': ('is_active','is_staff','is_superuser',"is_driver",
-        "is_customer",),
+        "is_customer",  ),
         }),
          ('Log Information', {
             'fields': ("last_login",'date_joined',),

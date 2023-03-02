@@ -65,13 +65,13 @@ class Trip(models.Model):
     trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
 
     pickup_area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
-    pickup_location = models.CharField(max_length=255)
-    pickup_time = models.DateTimeField()
+    pickup_location = models.CharField(max_length=255, blank=True, null=True)
+    pickup_time = models.DateTimeField(blank=True, null=True)
     drop_location = models.CharField(max_length=255, blank=True, null=True)
     drop_time = models.DateTimeField(blank=True, null=True)
     landmark = models.CharField(max_length=255, blank=True, null=True)
 
-    amount = models.DecimalField(max_digits=19, decimal_places=2)
+    amount = models.DecimalField(max_digits=19, decimal_places=2 ,blank=True, null=True)
     amount_status = models.CharField(
         choices=PAYMENT_STATUS, default="NOT PAID", max_length=150
     )

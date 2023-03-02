@@ -171,8 +171,8 @@ class TripAdmin(admin.ModelAdmin):
         data = self.get_queryset(request).get(pk=object_id)
 
         if data:
-            date = datetime.strftime(data.pickup_time, " %d/%m/%y")
-            time = datetime.strftime(data.pickup_time, "%H:%M ")
+            date = data.pickup_time.strftime("%d/%m/%y")
+            time = data.pickup_time.strftime("%H:%M ")
             c_message = gernerate_message(
                 data.customer.get_full_name(),
                 data.customer.phone,
