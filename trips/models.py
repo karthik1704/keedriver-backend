@@ -26,7 +26,7 @@ class TripType(MP_Node):
     def save(self, *args, **kwargs) -> None:
         if not self.slug or self.slug != self.name:
             self.slug = slugify(self.name)
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 # CHOICES = MoveNodeForm.mk_dropdown_tree(Category)
