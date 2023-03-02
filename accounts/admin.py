@@ -8,7 +8,7 @@ from .models import Customer, Driver, MyUser, DriverProfile, CustomerProfile
 
 # Register your models here.
 
-class CustomerProfileAdmin(admin.ModelAdmin):
+class CustomerProfileAdmin(admin.StackedInline):
     model=CustomerProfile
 
 
@@ -31,7 +31,7 @@ class CustomerForm(forms.ModelForm):
 
 class DriverForm(forms.ModelForm):
     class Meta:
-        model = Customer
+        model = Driver
         fields = (
             "first_name",
             "last_name",

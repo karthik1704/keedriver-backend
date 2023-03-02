@@ -83,6 +83,10 @@ class CustomerProfile(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
     is_business = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.customer.get_full_name()
+    
+    
 class Driver(MyUser):
     class Meta:
         proxy = True
