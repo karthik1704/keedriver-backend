@@ -8,14 +8,22 @@ from .models import Customer, Driver, MyUser, DriverProfile, CustomerProfile
 
 # Register your models here.
 
+
 class CustomerProfileAdmin(admin.StackedInline):
-    model=CustomerProfile
+    model = CustomerProfile
 
 
 class DriverProfileAdmin(admin.StackedInline):
-    model=DriverProfile
+    model = DriverProfile
+
 
 class CustomerForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(CustomerForm, self).__init__(*args, **kwargs)
+        self.fields[
+            "phone"
+        ].help_text = "Phone number should not contain '+91' and spaces"
+
     class Meta:
         model = Customer
         fields = (
@@ -25,11 +33,15 @@ class CustomerForm(forms.ModelForm):
             "phone",
         )
         required = ("first_name",)
-        
-     
 
 
 class DriverForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(DriverForm, self).__init__(*args, **kwargs)
+        self.fields[
+            "phone"
+        ].help_text = "Phone number should not contain '+91' and spaces"
+
     class Meta:
         model = Driver
         fields = (
@@ -39,14 +51,13 @@ class DriverForm(forms.ModelForm):
             "phone",
         )
         required = ("first_name",)
-       
 
 
 class CustomerAdmin(admin.ModelAdmin):
     form = CustomerForm
     list_display = ("phone", "first_name", "last_name", "is_customer")
     list_filter = ("date_joined",)
-    ordering=['date_joined']
+    ordering = ["date_joined"]
     search_fields = ("phone", "first_name", "last_name", "email")
 
     def get_inlines(self, request, obj=None):
@@ -62,11 +73,28 @@ class DriverAdmin(admin.ModelAdmin):
     list_filter = ("date_joined",)
     search_fields = ("phone", "first_name", "last_name", "email")
 
+    fieldsets = (
+        (
+            "Driver Information",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "phone",
+                ),
+            },
+        ),
+
+         
+    )
+
     def get_inlines(self, request, obj=None):
         if obj:
             return [DriverProfileAdmin]
         else:
             return []
+
 
 class UserAdmin(AuthUserAdmin):
     model = MyUser
@@ -91,41 +119,76 @@ class UserAdmin(AuthUserAdmin):
     filter_horizontal = ()
     list_filter = ()
     fieldsets = (
-        ('Account Information', {
-            'fields': ('username','phone','email',  'password'),
-        }),
-        ('Personal Information', {
-            'fields': ('first_name','last_name', 'country'),
-        }),
-        ('Permissions', {
-            'fields': ('is_active','is_staff','is_superuser',"is_driver",
-        "is_customer",  ),
-        }),
-         ('Log Information', {
-            'fields': ("last_login",'date_joined',),
-        })
+        (
+            "Account Information",
+            {
+                "fields": ("username", "phone", "email", "password"),
+            },
+        ),
+        (
+            "Personal Information",
+            {
+                "fields": ("first_name", "last_name", "country"),
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "is_driver",
+                    "is_customer",
+                ),
+            },
+        ),
+        (
+            "Log Information",
+            {
+                "fields": (
+                    "last_login",
+                    "date_joined",
+                ),
+            },
+        ),
     )
 
     add_fieldsets = (
-        (None, {
-            'fields': ('username','email', 'phone', 'password1', 'password2'),
-        }),
-        ('Personal Information', {
-            'fields': ('first_name','last_name', 'country'),
-        }),
-        ('Permissions', {
-            'fields': ('is_active','is_staff','is_superuser',"is_driver",
-        "is_customer",),
-        }),
+        (
+            None,
+            {
+                "fields": ("username", "email", "phone", "password1", "password2"),
+            },
+        ),
+        (
+            "Personal Information",
+            {
+                "fields": ("first_name", "last_name", "country"),
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "is_driver",
+                    "is_customer",
+                ),
+            },
+        ),
     )
-    
-    readonly_fields= ("last_login",'date_joined')
+
+    readonly_fields = ("last_login", "date_joined")
     search_fields = ("phone", "first_name", "last_name", "email")
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(UserAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['username'].required = True
-        return form
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super(UserAdmin, self).get_form(request, obj, **kwargs)
+    #     form.base_fields['username'].required = True
+    #     return form
+
 
 admin.site.register(MyUser, UserAdmin)
 admin.site.register(Customer, CustomerAdmin)

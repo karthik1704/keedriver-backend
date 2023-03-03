@@ -5,7 +5,6 @@ from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory, MoveNodeForm
 from .models import Trip, TripType
 from .utils import gernerate_message
-from datetime import datetime
 from django.utils import timezone
 
 from dal import autocomplete
@@ -171,8 +170,9 @@ class TripAdmin(admin.ModelAdmin):
         data = self.get_queryset(request).get(pk=object_id)
 
         if data:
-            date = data.pickup_time.strftime("%d/%m/%y")
-            time = data.pickup_time.strftime("%I:%M %p")
+            local_time = timezone.localtime(data.pickup_time)
+            date = local_time.strftime("%d/%m/%y")
+            time = local_time.strftime("%I:%M %p")
             c_message = gernerate_message(
                 data.customer.get_full_name(),
                 data.customer.phone,
