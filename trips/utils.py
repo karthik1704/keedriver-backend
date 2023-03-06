@@ -1,6 +1,6 @@
-const = """
+const = f"""
 Call Back  for further Trips %0a
-+91-7200588582 %0a
+%2B91 7200588582 %0a
 %0a 
 We are happy to serve you, Have a safe and Comfortable journey with our KeeDriver  %0a
 %0a
@@ -35,7 +35,7 @@ Your booking details are below %0a
 %0a
 *Name* {name} %0a
 %0a
-*Contact* {cphone} %0a
+*Contact* %2B91 {cphone} %0a
 %0a
 *Trip type* {trip_type} %0a
 %0a
@@ -51,7 +51,7 @@ Driver details %0a
 %0a
 *Driver name*  {dname} %0a
 Contact %0a
-+91{dphone} %0a
+%2B91 {dphone} %0a
 
 {const} %0a
     """
@@ -67,7 +67,7 @@ Your customer details are below %0a
 %0a
 *Customer name* {name} %0a
 %0a
-*Customer contact* {cphone} %0a
+*Customer contact* %2B91 {cphone} %0a
 %0a
 *Trip type* {trip_type} %0a
 %0a
@@ -83,7 +83,7 @@ Driver details %0a
 %0a
 *Driver name*  {dname} %0a
 Contact %0a
-+91{dphone} %0a
+%2B91 {dphone} %0a
 
     """
     return msg

@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from trips.views import DriverAutocomplete
+from trips.views import DriverAutocomplete, TripTypeAutocomplete
 
 admin.site.site_header  =  "Kee Driver "  
 admin.site.site_title  =  "Kee Driver Dashboard"
@@ -28,6 +28,11 @@ urlpatterns = [
         r"^driver-autocomplete/$",
         DriverAutocomplete.as_view(),
         name="driver-autocomplete",
+    ),
+    re_path(
+        r"^triptype-autocomplete/$",
+        TripTypeAutocomplete.as_view(),
+        name="triptype-autocomplete",
     ),
     path("admin/", admin.site.urls),
     path("api/v1/", include("rest_framework.urls")),

@@ -22,7 +22,7 @@ class CustomerForm(forms.ModelForm):
         super(CustomerForm, self).__init__(*args, **kwargs)
         self.fields[
             "phone"
-        ].help_text = "Phone number should not contain '+91' and spaces"
+        ].help_text = "only enter 10 digits phone number, should not contain '+91' and spaces"
 
     class Meta:
         model = Customer
@@ -40,7 +40,7 @@ class DriverForm(forms.ModelForm):
         super(DriverForm, self).__init__(*args, **kwargs)
         self.fields[
             "phone"
-        ].help_text = "Phone number should not contain '+91' and spaces"
+        ].help_text = "only enter 10 digits phone number, should not contain '+91' and spaces"
 
     class Meta:
         model = Driver
@@ -95,6 +95,8 @@ class DriverAdmin(admin.ModelAdmin):
         else:
             return []
 
+    # def response_add(self, request: HttpRequest, obj: _ModelT, post_url_continue: Optional[str] = ...) -> HttpResponse:
+    #     return super().response_add(request, obj, post_url_continue)
 
 class UserAdmin(AuthUserAdmin):
     model = MyUser
@@ -182,12 +184,12 @@ class UserAdmin(AuthUserAdmin):
     )
 
     readonly_fields = ("last_login", "date_joined")
-    search_fields = ("phone", "first_name", "last_name", "email")
+    search_fields = ("username","phone", "first_name", "last_name", "email")
 
-    # def get_form(self, request, obj=None, **kwargs):
-    #     form = super(UserAdmin, self).get_form(request, obj, **kwargs)
-    #     form.base_fields['username'].required = True
-    #     return form
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(UserAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['username'].required = True
+        return form
 
 
 admin.site.register(MyUser, UserAdmin)

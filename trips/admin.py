@@ -21,11 +21,15 @@ class MyNodeForm(MoveNodeForm):
 
 class TripForm(forms.ModelForm):
     driver_based_on_loaction = forms.BooleanField(
-        widget=forms.CheckboxInput(attrs={"checked": True}),
+        widget=forms.CheckboxInput(),
         label="Driver Based location",
         help_text="This will turn on/off location based on driver selection",
         required=False,
     )
+   
+    trip_parent_type = forms.ModelChoiceField(queryset=TripType.objects.filter(depth=1))
+
+    
 
     class Meta:
         model = Trip
@@ -34,9 +38,20 @@ class TripForm(forms.ModelForm):
             "driver": autocomplete.ModelSelect2(
                 "driver-autocomplete",
                 forward=["pickup_area", "driver_based_on_loaction"],
+            ),
+            "trip_type": autocomplete.ModelSelect2(
+                "triptype-autocomplete",
+                forward=["trip_parent_type", ],
             )
         }
 
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance')
+        super(TripForm, self).__init__(*args, **kwargs)
+        if instance: 
+            child_id = self.instance.trip_type.id
+            self.fields['trip_parent_type'].initial = TripType.objects.get(pk=child_id).get_parent().id
+        self.fields['driver_based_on_loaction'].initial = True
 
 # trip actions
 @admin.action(description="Mark selected trip as completed")
@@ -70,7 +85,7 @@ def make_trip_completed_amount_paid(modeladmin, request, queryset):
 
 
 class TripAdmin(admin.ModelAdmin):
-    change_form_template = "admin/change_form1.html"
+    change_form_template = "admin/trips/change_form.html"
 
     form = TripForm
 
@@ -99,6 +114,7 @@ class TripAdmin(admin.ModelAdmin):
             "Trip Details",
             {
                 "fields": (
+                    "trip_parent_type",
                     "trip_type",
                     "pickup_area",
                     "pickup_location",
@@ -166,7 +182,6 @@ class TripAdmin(admin.ModelAdmin):
         obj.save(update_fields=update_fields)
 
     def change_view(self, request, object_id, form_url="", extra_content={}):
-        print(object_id)
         data = self.get_queryset(request).get(pk=object_id)
 
         if data:
@@ -184,7 +199,7 @@ class TripAdmin(admin.ModelAdmin):
                 data.driver.phone,
                 data.trip_id,
                 data.pickup_location,
-                False
+                False,
             )
             d_message = gernerate_message(
                 data.customer.get_full_name(),
@@ -197,7 +212,7 @@ class TripAdmin(admin.ModelAdmin):
                 data.driver.phone,
                 data.trip_id,
                 data.pickup_location,
-                True
+                True,
             )
             extra_content.update({"c_message": c_message})
             extra_content.update({"d_message": d_message})
@@ -205,7 +220,6 @@ class TripAdmin(admin.ModelAdmin):
             extra_content.update({"driver": f"+91{data.driver.phone}"})
 
         return super().change_view(request, object_id, form_url, extra_content)
-
 
 
 # CHOICES = MoveNodeForm.mk_dropdown_tree(Category)

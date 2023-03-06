@@ -21,7 +21,8 @@ class TripType(MP_Node):
     node_order_by = ["name"]
 
     def __str__(self):
-        return "%s%s" % ("" if self.depth == 1 else "--" * self.depth, self.name)
+        # return "%s%s" % ("" if self.depth == 1 else "--" * self.depth, self.name)
+        return self.name
 
     def save(self, *args, **kwargs) -> None:
         if not self.slug or self.slug != self.name:
