@@ -55,6 +55,12 @@ class TripForm(forms.ModelForm):
             self.fields["trip_parent_type"].initial = (
                 TripType.objects.get(pk=child_id).get_parent().id
             )
+        else :
+            local_trip = TripType.objects.all().first()
+            if local_trip:
+                self.fields["trip_parent_type"].initial = (local_trip.id)
+                child_trip =  local_trip.get_children().first()
+                self.fields["trip_type"].initial = (child_trip.id)
         self.fields["driver_based_on_loaction"].initial = True
 
 
