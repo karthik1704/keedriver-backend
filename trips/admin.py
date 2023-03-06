@@ -26,10 +26,10 @@ class TripForm(forms.ModelForm):
         help_text="This will turn on/off location based on driver selection",
         required=False,
     )
-   
-    trip_parent_type = forms.ModelChoiceField(queryset=TripType.objects.filter(depth=1))
 
-    
+    trip_parent_type = forms.ModelChoiceField(
+        queryset=TripType.objects.filter(depth=1),
+    )
 
     class Meta:
         model = Trip
@@ -41,17 +41,22 @@ class TripForm(forms.ModelForm):
             ),
             "trip_type": autocomplete.ModelSelect2(
                 "triptype-autocomplete",
-                forward=["trip_parent_type", ],
-            )
+                forward=[
+                    "trip_parent_type",
+                ],
+            ),
         }
 
     def __init__(self, *args, **kwargs):
-        instance = kwargs.get('instance')
+        instance = kwargs.get("instance")
         super(TripForm, self).__init__(*args, **kwargs)
-        if instance: 
+        if instance:
             child_id = self.instance.trip_type.id
-            self.fields['trip_parent_type'].initial = TripType.objects.get(pk=child_id).get_parent().id
-        self.fields['driver_based_on_loaction'].initial = True
+            self.fields["trip_parent_type"].initial = (
+                TripType.objects.get(pk=child_id).get_parent().id
+            )
+        self.fields["driver_based_on_loaction"].initial = True
+
 
 # trip actions
 @admin.action(description="Mark selected trip as completed")

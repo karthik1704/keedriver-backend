@@ -1,4 +1,25 @@
 {% extends "admin/change_form.html" %} 
+
+
+{% block extrahead %}
+{{ block.super }}
+<script type="text/javascript" >
+  
+  const $ = django.jQuery;
+  $(document).ready(function() {
+    // Bind on continent field change
+    $(':input[name$=trip_parent_type]').on('change', function() {
+        // Get the field prefix, ie. if this comes from a formset form
+        let prefix = $(this).getFormPrefix();
+        console.log(prefix)
+
+        // Clear the autocomplete with the same prefix
+        $(':input[name=' + prefix + ' trip_type]').val(null).trigger('change');
+    });
+});
+</script>
+{% endblock %}
+
 {% block submit_buttons_bottom %}
 <div class="submit-row" style="padding-bottom: 20px;">
   

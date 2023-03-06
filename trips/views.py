@@ -17,7 +17,6 @@ class DriverAutocomplete(autocomplete.Select2QuerySetView):
 
         area = self.forwarded.get("pickup_area", None)
         by_location = self.forwarded.get("driver_based_on_loaction", None)
-        print(self.q)
         if by_location:
             if area:
                 # qs = qs.order_by( Case(When(driverprofile__area__in=area, then=0), default=1))
