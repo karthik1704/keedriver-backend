@@ -152,8 +152,9 @@ class TripAdmin(admin.ModelAdmin):
 
     @admin.display(ordering="driver__phone", description="Driver contact")
     def driver_contact(self, obj):
-        return obj.driver.phone
-
+        if obj.driver:
+            return obj.driver.phone
+        return None
     def formfield_for_dbfield(self, *args, **kwargs):
         formfield = super().formfield_for_dbfield(*args, **kwargs)
 
@@ -199,6 +200,8 @@ class TripAdmin(admin.ModelAdmin):
             local_time = timezone.localtime(data.pickup_time)
             date = local_time.strftime("%d/%m/%y")
             time = local_time.strftime("%I:%M %p")
+            driver_name = data.driver.get_full_name() if data.driver else ''
+            driver_phone =   data.driver.phone if data.driver else ''
             c_message = gernerate_message(
                 data.customer.get_full_name(),
                 data.customer.phone,
@@ -206,8 +209,8 @@ class TripAdmin(admin.ModelAdmin):
                 data.drop_location,
                 date,
                 time,
-                data.driver.get_full_name(),
-                data.driver.phone,
+                driver_name,
+                driver_phone,
                 data.trip_id,
                 data.pickup_location,
                 False,
@@ -219,8 +222,8 @@ class TripAdmin(admin.ModelAdmin):
                 data.drop_location,
                 date,
                 time,
-                data.driver.get_full_name(),
-                data.driver.phone,
+                driver_name,
+                driver_phone,
                 data.trip_id,
                 data.pickup_location,
                 True,
@@ -228,7 +231,7 @@ class TripAdmin(admin.ModelAdmin):
             extra_content.update({"c_message": c_message})
             extra_content.update({"d_message": d_message})
             extra_content.update({"customer": f"+91{data.customer.phone}"})
-            extra_content.update({"driver": f"+91{data.driver.phone}"})
+            extra_content.update({"driver": f"+91{driver_phone}"})
 
         return super().change_view(request, object_id, form_url, extra_content)
 
