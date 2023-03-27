@@ -35,7 +35,11 @@ urlpatterns = [
         name="triptype-autocomplete",
     ),
     path("admin/", admin.site.urls),
-    path("api/v1/", include("rest_framework.urls")),
+    path("api/v1/rest/", include("rest_framework.urls")),
+    path('api/v1/', include('dj_rest_auth.urls')),
+    path("api/v1/", include("accounts.urls")),
+    path("api/v1/", include("areas.urls")),
+    path("api/v1/", include("trips.urls")),
 ]
 
 

@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-1-2kfp%+^+7h@d$#bj(c$7d%t+01taskh-$647e#!s3=!76_qv"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -47,7 +47,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 3-rd party
     "rest_framework",
+    "rest_framework.authtoken",
     "treebeard",
+    "dj_rest_auth",
+    "django_filters",
     # apps
     "accounts.apps.AccountsConfig",
     "trips",
@@ -162,12 +165,31 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Rest_Framework
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "accounts.backends.PasswordlessBackend",
+]
+
+REST_AUTH = {
+    "LOGIN_SERIALIZER": "accounts.serializers.CustomLoginSerializer",
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": "kee-driver-auth",
+    "JWT_AUTH_REFRESH_COOKIE": "kee-driver-refresh-token",
+    "JWT_AUTH_RETURN_EXPIRATION": True,
+}
+
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ]
+    ],
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
 

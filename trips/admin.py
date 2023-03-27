@@ -178,7 +178,7 @@ class TripAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         # drop_time  = form.cleaned_data.get('drop_time')
 
-        trip_status = form.cleaned_data.get("trip_status")
+        trip_status = form.cleaned_data.get("-trip_status")
         amount_status = form.cleaned_data.get("amount_status")
         if not obj.drop_time:  # type: ignore
             if trip_status == "COMPLETED":

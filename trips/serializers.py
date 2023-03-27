@@ -1,0 +1,51 @@
+from rest_framework import serializers
+
+from .models import Trip, TripType
+
+
+class TripTypeChildrenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TripType
+        exclude = (
+            "path",
+            "depth",
+            "numchild",
+        )
+
+
+
+class TripTypeSerializer(serializers.ModelSerializer):
+    children = TripTypeChildrenSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TripType
+        exclude = (
+            "path",
+            "depth",
+            "numchild",
+        )
+
+class TripTypeCreateSerializer(TripTypeSerializer):
+    parent_id = serializers.CharField(required=False)
+    class Meta:
+        model = TripType
+        exclude = (
+            "path",
+            "depth",
+            "numchild",
+        )
+    
+    def create(self, validated_data):
+        parent_id = validated_data.get('parent_id')
+        slug = validated_data.get('slug')
+        name = validated_data.get('name')
+        if parent_id:
+            parent = TripType.objects.get(pk=parent_id)
+            return parent.add_child(name=name, slug=slug)
+        return TripType.add_root(name=name, slug=slug)
+
+
+class TripSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trip
+        fields = "__all__"

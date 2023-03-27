@@ -2,10 +2,69 @@ from django.shortcuts import render
 from dal import autocomplete
 from django.db.models import Q
 from django.db.models import Case, When
+from rest_framework import viewsets, permissions, filters
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, DestroyModelMixin, CreateModelMixin, UpdateModelMixin
+from rest_framework.generics import GenericAPIView
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 from accounts.models import Driver
-from .models import TripType
+from .models import Trip,TripType
+from .serializers import TripTypeSerializer,  TripTypeCreateSerializer, TripSerializer
+
 # Create your views here.
+
+
+class TripTypeListView(GenericAPIView, ListModelMixin, ):
+    queryset = TripType.objects.all()
+    serializer_class = TripTypeSerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    def get_queryset(self):
+        q= TripType.objects.filter(depth=1).order_by('id')
+        for type in q:
+            type.children = type.get_children()
+        return q
+    
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+class TripTypeRDView(GenericAPIView, RetrieveModelMixin, DestroyModelMixin,UpdateModelMixin ):
+    queryset = TripType.objects.all().order_by('-id')
+    serializer_class = TripTypeSerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+
+
+    def get(self, request,  *args, **kwargs):
+       
+        return self.retrieve(request, *args, **kwargs)
+    
+    def put(self, request,  *args, **kwargs):
+       
+        return self.update(request, *args, **kwargs)
+    
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+class TripTypesCreate(GenericAPIView, CreateModelMixin):
+    queryset = TripType.objects.all()
+    serializer_class = TripTypeCreateSerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    def post(self, request,  *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+    
+class TripViewset(viewsets.ModelViewSet):
+    
+    queryset = Trip.objects.all().order_by('trip_status')
+    serializer_class = TripSerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ["trip_status", "amount_status"]
+    ordering_fields = ["trip_status", ]
+    search_fields = ['trip_id', 'customer__phone',  'driver__phone']
 
 
 class DriverAutocomplete(autocomplete.Select2QuerySetView):
