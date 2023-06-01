@@ -96,10 +96,18 @@ WSGI_APPLICATION = "keedriver.wsgi.application"
 
 if DEBUG:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+        # "default": {
+        #     "ENGINE": "django.db.backends.sqlite3",
+        #     "NAME": BASE_DIR / "db.sqlite3",
+        # }
+         "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "keedriver_dev",
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            "HOST": "65.0.184.137",
+            "PORT": "5432",
+         }
     }
 
 if not DEBUG:
