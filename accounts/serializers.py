@@ -112,11 +112,29 @@ class MyUserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-class PasswordChangeSerializer(serializers.Serializer):
-    user_id=serializers.CharField()
+class PasswordChangeSerializer(serializers.ModelSerializer):
+    # user_id=serializers.CharField()
     new_password = serializers.CharField()    
     new_confrim_password = serializers.CharField()
-    
+    class Meta:
+        model = MyUser
+        fields = ( 'new_password', 'new_confrim_password2')
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['new_confrim_password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+
+        return attrs
+
+
+    def update(self, instance, validated_data):
+
+        
+        instance.set_password(validated_data['password'])
+        print(instance)
+        instance.save()
+
+        return instance
         
 
 class CustomerSerializer(serializers.ModelSerializer):

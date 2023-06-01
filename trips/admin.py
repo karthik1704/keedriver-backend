@@ -12,6 +12,8 @@ from dal import autocomplete
 from wallets.models import DriverWalletTransaction
 
 
+
+
 # Register your models here.
 class MyNodeForm(MoveNodeForm):
     class Meta:
@@ -129,6 +131,7 @@ class TripAdmin(admin.ModelAdmin):
                     "trip_type",
                     "pickup_area",
                     "pickup_location",
+                    "location",
                     "pickup_time",
                     "drop_location",
                     "drop_time",

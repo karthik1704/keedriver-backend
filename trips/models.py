@@ -7,6 +7,7 @@ import decimal
 
 from treebeard.mp_tree import MP_Node
 from django.utils.safestring import mark_safe
+from location_field.models.plain import PlainLocationField
 from accounts.models import Customer, Driver
 from areas.models import Area
 
@@ -67,6 +68,8 @@ class Trip(models.Model):
 
     pickup_area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
     pickup_location = models.CharField(max_length=255, blank=True, null=True)
+    location = PlainLocationField(based_fields=['pickup_location', 'pickup_area__name'], zoom=7, blank=True, null=True) # type: ignore
+
     pickup_time = models.DateTimeField(blank=True, null=True)
     drop_location = models.CharField(max_length=255, blank=True, null=True)
     drop_time = models.DateTimeField(blank=True, null=True)

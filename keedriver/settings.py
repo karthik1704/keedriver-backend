@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     "treebeard",
     "dj_rest_auth",
     "django_filters",
+    "location_field.apps.DefaultConfig",
     # apps
     "accounts.apps.AccountsConfig",
     "trips",
@@ -176,6 +178,8 @@ REST_AUTH = {
     "JWT_AUTH_COOKIE": "kee-driver-auth",
     "JWT_AUTH_REFRESH_COOKIE": "kee-driver-refresh-token",
     "JWT_AUTH_RETURN_EXPIRATION": True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
+
 }
 
 REST_FRAMEWORK = {
@@ -187,11 +191,21 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
+        "rest_framework.permissions.IsAuthenticated"
     ],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_PAGINATION_CLASS": "keedriver.utils.CustomPagination",
+    "PAGE_SIZE": 15,
 }
 
 
 # Custom User
 AUTH_USER_MODEL = "accounts.MyUser"
+
+# Map
+LOCATION_FIELD = {
+    'provider.google.api': '//maps.google.com/maps/api/js?sensor=true',
+    'provider.google.api_key': 'AIzaSyC8Wz-5E-JkgNLy-W0L4OGUp56mqvjVcD4',
+    'provider.google.api_libraries': '',
+    'provider.google.map.type': 'ROADMAP',
+}

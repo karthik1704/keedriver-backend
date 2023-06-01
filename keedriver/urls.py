@@ -40,6 +40,7 @@ urlpatterns = [
     path("api/v1/", include("accounts.urls")),
     path("api/v1/", include("areas.urls")),
     path("api/v1/", include("trips.urls")),
+    path("api/v1/", include("wallets.urls")),
 ]
 
 
