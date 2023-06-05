@@ -131,7 +131,6 @@ class TripAdmin(admin.ModelAdmin):
                     "trip_type",
                     "pickup_area",
                     "pickup_location",
-                    "location",
                     "pickup_time",
                     "drop_location",
                     "drop_time",
