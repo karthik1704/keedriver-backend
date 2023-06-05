@@ -190,6 +190,7 @@ REST_AUTH = {
     "JWT_AUTH_REFRESH_COOKIE": "kee-driver-refresh-token",
     "JWT_AUTH_RETURN_EXPIRATION": True,
     "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
+    "JWT_AUTH_HTTPONLY": False
 
 }
 
