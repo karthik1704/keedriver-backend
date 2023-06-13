@@ -96,10 +96,10 @@ class TripSerializer(serializers.ModelSerializer):
         model = Trip
         fields = "__all__"
 
-    def get_driver_name(self, obj):
+    def get_driver_name(self, obj)->str|None:
         if obj.driver:
             return obj.driver.get_full_name()
         return None
 
-    def get_customer_name(self, obj):
+    def get_customer_name(self, obj)->str|None:
         return obj.customer.get_full_name()

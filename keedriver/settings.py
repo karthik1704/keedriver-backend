@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "django_filters",
     "location_field.apps.DefaultConfig",
+    "drf_spectacular",
     # apps
     "accounts.apps.AccountsConfig",
     "trips",
@@ -103,14 +104,14 @@ if DEBUG:
         #     "ENGINE": "django.db.backends.sqlite3",
         #     "NAME": BASE_DIR / "db.sqlite3",
         # }
-         "default": {
+        "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": "keedriver_dev",
             "USER": "postgres",
             "PASSWORD": "postgres",
             "HOST": "65.0.184.137",
             "PORT": "5432",
-         }
+        }
     }
 
 if not DEBUG:
@@ -190,8 +191,7 @@ REST_AUTH = {
     "JWT_AUTH_REFRESH_COOKIE": "kee-driver-refresh-token",
     "JWT_AUTH_RETURN_EXPIRATION": True,
     "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
-    "JWT_AUTH_HTTPONLY": False
-
+    "JWT_AUTH_HTTPONLY": False,
 }
 
 REST_FRAMEWORK = {
@@ -202,12 +202,11 @@ REST_FRAMEWORK = {
     ],
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated"
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "keedriver.utils.CustomPagination",
     "PAGE_SIZE": 15,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 
@@ -216,8 +215,16 @@ AUTH_USER_MODEL = "accounts.MyUser"
 
 # Map
 LOCATION_FIELD = {
-    'provider.google.api': '//maps.google.com/maps/api/js?sensor=true',
-    'provider.google.api_key': 'AIzaSyC8Wz-5E-JkgNLy-W0L4OGUp56mqvjVcD4',
-    'provider.google.api_libraries': '',
-    'provider.google.map.type': 'ROADMAP',
+    "provider.google.api": "//maps.google.com/maps/api/js?sensor=true",
+    "provider.google.api_key": "AIzaSyC8Wz-5E-JkgNLy-W0L4OGUp56mqvjVcD4",
+    "provider.google.api_libraries": "",
+    "provider.google.map.type": "ROADMAP",
+}
+
+# API Documentation
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Keedriver API",
+    "DESCRIPTION": "Trip booking system",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }

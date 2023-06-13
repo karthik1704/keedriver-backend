@@ -24,10 +24,10 @@ class DriverWalletTransactionSerializer(serializers.ModelSerializer):
         model = DriverWalletTransaction
         fields = "__all__"
 
-    def get_driver_name(self, obj):
+    def get_driver_name(self, obj) -> str | None:
         return obj.wallet.driver.get_full_name()
     
-    def get_trip_id(self, obj):
+    def get_trip_id(self, obj)-> int | None:
 
         if obj.trip:
             return obj.trip.trip_id
