@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "65.0.184.137",
+    "43.205.194.9",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -109,7 +110,7 @@ if DEBUG:
             "NAME": "keedriver_dev",
             "USER": "postgres",
             "PASSWORD": "postgres",
-            "HOST": "65.0.184.137",
+            "HOST": "43.205.194.9",
             "PORT": "5432",
         }
     }
