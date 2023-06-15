@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     "treebeard",
     "dj_rest_auth",
     "django_filters",
-    "location_field.apps.DefaultConfig",
     "drf_spectacular",
     # apps
     "accounts.apps.AccountsConfig",
