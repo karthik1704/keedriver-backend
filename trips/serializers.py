@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from typing import Union
 
 from .models import Trip, TripType
 
@@ -96,10 +97,10 @@ class TripSerializer(serializers.ModelSerializer):
         model = Trip
         fields = "__all__"
 
-    def get_driver_name(self, obj)->str|None:
+    def get_driver_name(self, obj)->Union[str,None]:
         if obj.driver:
             return obj.driver.get_full_name()
         return None
 
-    def get_customer_name(self, obj)->str|None:
+    def get_customer_name(self, obj)->Union[str,None]:
         return obj.customer.get_full_name()
