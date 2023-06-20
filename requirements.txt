@@ -4,7 +4,7 @@ dj-rest-auth==4.0.0
 Django==4.2.1
 django-autocomplete-light==3.9.4
 django-cors-headers==3.14.0
-django-filter==22.1requirements.pip
+django-filter==22.1
 django-location-field==2.7.0
 django-map-widgets==0.4.1
 django-treebeard==4.7
@@ -17,7 +17,6 @@ jsonschema==4.17.3
 Markdown==3.4.1
 Pillow==9.4.0
 psycopg==3.1.9
-psycopg-binary==3.1.9
 PyJWT==2.6.0
 pyrsistent==0.19.3
 pytz==2022.7.1
