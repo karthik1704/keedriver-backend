@@ -2,7 +2,7 @@ from django.shortcuts import render
 from dal import autocomplete
 from django.db.models import Q
 from django.db.models import Case, When, Sum
-from django.utils import timezone
+from django.utils.timezone import datetime, timedelta, localdate, make_aware
 from rest_framework import viewsets, permissions, filters
 from rest_framework.views import APIView
 from rest_framework.mixins import (
@@ -27,8 +27,10 @@ from .serializers import (
     TripTypeDetailSerializer,
 )
 from accounts.models import Customer
-
+from django.db.models import Count
+from django.db.models.functions import TruncDate, TruncDay, TruncMonth
 import calendar
+
 # Create your views here.
 
 
@@ -228,28 +230,111 @@ class DashboardView(APIView):
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
     def get(self, request, format=None):
-        print(request.query_params)
-        print(request.data)
-        trip_active = Trip.objects.filter(trip_status="ACTIVE" ).filter(created_at=None).count()
+
+        today = make_aware(datetime.now())
+
+        today_trips = Trip.objects.filter(
+            created_at__year=today.year,
+            created_at__month=today.month,
+            created_at__day=today.day,
+        ).count()
+
+        last_30_days_trips = Trip.objects.filter(
+            created_at__lte=today,
+            created_at__gt=today - timedelta(days=30),
+        ).count()
+
+        trip_active = (
+            Trip.objects.filter(trip_status="ACTIVE").count()
+        )
         trip_completed = Trip.objects.filter(trip_status="COMPLETED").count()
-        total_amount = Trip.objects.filter(amount_status="PAID").aggregate(
+
+        total_trips = Trip.objects.all().count()
+        cancelled_trips = Trip.objects.filter(trip_status="CANCELLED").count()
+
+        today_amount = Trip.objects.filter(
+            amount_status="PAID",
+            created_at__year=today.year,
+            created_at__month=today.month,
+            created_at__day=today.day,
+        ).aggregate(Sum("amount"))["amount__sum"]
+
+        today_amount = today_amount if today_amount is not None else 0
+
+        last_30_days_amount = Trip.objects.filter(
+            amount_status="PAID",
+            created_at__lte=today,
+            created_at__gt=today - timedelta(days=30),
+        ).aggregate(Sum("amount"))["amount__sum"]
+
+        last_30_days_amount = (
+            last_30_days_amount if last_30_days_amount is not None else 0
+        )
+
+        total_amount = Trip.objects.all().aggregate(Sum("amount"))["amount__sum"]
+        total_amount_paid = Trip.objects.filter(
+            amount_status="PAID",
+        ).aggregate(
             Sum("amount")
         )["amount__sum"]
         pending_amount = Trip.objects.filter(amount_status="NOT PAID").aggregate(
             Sum("amount")
         )["amount__sum"]
+
+        pending_amount = pending_amount if pending_amount is not None else 0
+
+        total_drivers = Driver.objects.all().count()
+        active_drivers = Driver.objects.filter(is_active=True).count()
+        today_joined_drivers = (
+            Driver.objects.filter(
+                date_joined__year=today.year,
+                date_joined__month=today.month,
+                date_joined__day=today.day,
+            ).count()
+            | 0
+        )
+
+        trips_lines = (
+            Trip.objects.filter(
+             created_at__lte=today,
+             created_at__gt=today - timedelta(days=30),
+            ).annotate(
+                day=TruncDate("created_at")
+            )  # Truncate to month and add to select list
+            .values("day")  # Group By month
+            .annotate(count=Count("id"))  # Select the count of the grouping
+            .order_by("-day")
+        )
+
         return Response(
             {
-                "trip_active": trip_active,
-                "trip_completed": trip_completed,
-                "total_amount": total_amount,
-                "pending_amount":pending_amount
+                "trips": {
+                    "today": today_trips,
+                    "30days": last_30_days_trips,
+                    "total_trips": total_trips,
+                    "active_trips": trip_active,
+                    "trip_completed": trip_completed,
+                    "cancelled_trips": cancelled_trips,
+
+                },
+                "amount": {
+                    "today": today_amount,
+                    "30days": last_30_days_amount,
+                    "total_amount": total_amount,
+                    "total_amount_paid": total_amount_paid,
+                    "pending_amount": pending_amount,
+                },
+                "drivers": {
+                    "total": total_drivers,
+                    "active": active_drivers,
+                    "today": today_joined_drivers,
+                },
+                "trips_line": trips_lines,
             }
         )
 
 
 class DashboardCustomerChartView(APIView):
-    
     def get(self, request, format=None):
         users = Customer.objects.all()
         months = []
@@ -259,8 +344,34 @@ class DashboardCustomerChartView(APIView):
         months.sort()
         data = []
         for month in months:
-            data.append({
-                'month': calendar.month_name[month],
-                'count': Customer.objects.filter(date_joined__month=month).count()
-            })
+            data.append(
+                {
+                    "month": calendar.month_name[month],
+                    "count": Customer.objects.filter(date_joined__month=month).count(),
+                }
+            )
         return Response(data, status=status.HTTP_200_OK)
+
+
+# trips : {
+# today : 10,
+# 30days : 100
+# },
+# active_trips : 10
+# amount : {
+# today : 300,
+# 30days : 10000
+# },
+# drivers : {
+# total : 50,
+# active : 48,
+# today : 4
+# },
+# trips_line :{
+# 05/06 : 10,
+# 04/06 :8,
+# 03/06 : 12
+# ...
+# ...
+# 06/05 : 15
+# }
