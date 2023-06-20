@@ -190,8 +190,12 @@ REST_AUTH = {
     "JWT_AUTH_COOKIE": "kee-driver-auth",
     "JWT_AUTH_REFRESH_COOKIE": "kee-driver-refresh-token",
     "JWT_AUTH_RETURN_EXPIRATION": True,
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
     "JWT_AUTH_HTTPONLY": False,
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10) if DEBUG else timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
 }
 
 REST_FRAMEWORK = {

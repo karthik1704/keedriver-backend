@@ -295,7 +295,10 @@ class DashboardView(APIView):
         )
 
         trips_lines = (
-            Trip.objects.annotate(
+            Trip.objects.filter(
+             created_at__lte=today,
+             created_at__gt=today - timedelta(days=30),
+            ).annotate(
                 day=TruncDate("created_at")
             )  # Truncate to month and add to select list
             .values("day")  # Group By month
