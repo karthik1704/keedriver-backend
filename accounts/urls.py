@@ -11,6 +11,6 @@ router.register(r'users', MyUserViewset)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('users/changepassword/<int:pk>', MyUserPasswordChange.as_view()),
+    path('user/changepassword/', MyUserPasswordChange.as_view()),
     path('', include(router.urls)),
 ]
