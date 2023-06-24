@@ -102,18 +102,18 @@ WSGI_APPLICATION = "keedriver.wsgi.application"
 
 if DEBUG:
     DATABASES = {
-        # "default": {
-        #     "ENGINE": "django.db.backends.sqlite3",
-        #     "NAME": BASE_DIR / "db.sqlite3",
-        # }
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "keedriver",
-            "USER": "keedriver",
-            "PASSWORD": "dAAPeApoCrPY3XulD6kA",
-            "HOST": "keedriver-1.cc50dbdrqhe5.ap-south-1.rds.amazonaws.com",
-            "PORT": "5432",
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
+        # "default": {
+        #     "ENGINE": "django.db.backends.postgresql",
+        #     "NAME": "keedriver",
+        #     "USER": "keedriver",
+        #     "PASSWORD": "dAAPeApoCrPY3XulD6kA",
+        #     "HOST": "keedriver-1.cc50dbdrqhe5.ap-south-1.rds.amazonaws.com",
+        #     "PORT": "5432",
+        # }
     }
 
 if not DEBUG:
