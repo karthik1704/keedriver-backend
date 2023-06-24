@@ -108,10 +108,10 @@ if DEBUG:
         # }
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": "keedriver_dev",
-            "USER": "postgres",
-            "PASSWORD": "postgres",
-            "HOST": "43.205.194.9",
+            "NAME": "keedriver",
+            "USER": "keedriver",
+            "PASSWORD": "dAAPeApoCrPY3XulD6kA",
+            "HOST": "keedriver-1.cc50dbdrqhe5.ap-south-1.rds.amazonaws.com",
             "PORT": "5432",
         }
     }
@@ -121,9 +121,9 @@ if not DEBUG:
         "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": "keedriver",
-            "USER": "postgres",
-            "PASSWORD": "postgres",
-            "HOST": "localhost",
+            "USER": "keedriver",
+            "PASSWORD": "dAAPeApoCrPY3XulD6kA",
+            "HOST": "keedriver-1.cc50dbdrqhe5.ap-south-1.rds.amazonaws.com",
             "PORT": "5432",
             # 'OPTIONS': {
             #     'service': 'kee_driver_service',
