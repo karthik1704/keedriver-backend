@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import environ
+
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,13 +29,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-1-2kfp%+^+7h@d$#bj(c$7d%t+01taskh-$647e#!s3=!76_qv"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "65.0.184.137",
     "43.205.194.9",
+    "api.keedriver.com",
+    "www.api.keedriver.com"
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -100,29 +107,29 @@ WSGI_APPLICATION = "keedriver.wsgi.application"
 
 if DEBUG:
     DATABASES = {
-        # "default": {
-        #     "ENGINE": "django.db.backends.sqlite3",
-        #     "NAME": BASE_DIR / "db.sqlite3",
-        # }
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "keedriver_dev",
-            "USER": "postgres",
-            "PASSWORD": "postgres",
-            "HOST": "43.205.194.9",
-            "PORT": "5432",
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
+        # "default": {
+        #     "ENGINE": "django.db.backends.postgresql",
+        #     "NAME": "keedriver",
+        #     "USER": "keedriver",
+        #     "PASSWORD": "dAAPeApoCrPY3XulD6kA",
+        #     "HOST": "keedriver-1.cc50dbdrqhe5.ap-south-1.rds.amazonaws.com",
+        #     "PORT": "5432",
+        # }
     }
 
 if not DEBUG:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": "keedriver",
-            "USER": "postgres",
-            "PASSWORD": "postgres",
-            "HOST": "localhost",
-            "PORT": "5432",
+            "NAME": env("DB_NAME"),
+            "USER": env("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD"),
+            "HOST": env("DB_HOST"),
+            "PORT": env("DB_PORT"),
             # 'OPTIONS': {
             #     'service': 'kee_driver_service',
             #     'passfile': '.my_pgpass',
