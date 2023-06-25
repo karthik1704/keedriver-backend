@@ -3,13 +3,13 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import GenericAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 
 import calendar
 import datetime
 from .models import Customer, Driver, MyUser
-from .serializers import CustomerSerializer, DriverSerializer, MyUserSerializer, PasswordChangeSerializer
+from .serializers import CustomerSerializer, DriverSerializer, MyUserSerializer, CustomPasswordChangeSerializer
 # Create your views here.
 
 class MyUserViewset(viewsets.ModelViewSet):
@@ -22,10 +22,19 @@ class MyUserViewset(viewsets.ModelViewSet):
     ordering_fields = ["created_at", ]
     search_fields = ['first_name', 'last_name','phone',  'username']
 
-class MyUserPasswordChange(UpdateAPIView):
+class MyUserPasswordChange(GenericAPIView):
     queryset = MyUser.objects.all()
-    serializer_class = PasswordChangeSerializer
+    serializer_class = CustomPasswordChangeSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id = serializer.validated_data.get('id')
+        user = MyUser.objects.get(pk=id)
+        user.set_password(serializer.validated_data.get("password"))
+        user.save()
+        return Response({'detail': 'New password has been saved.'})
 
 
 class CustomerViewset(viewsets.ModelViewSet):

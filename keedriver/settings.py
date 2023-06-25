@@ -193,6 +193,8 @@ AUTHENTICATION_BACKENDS = [
 
 REST_AUTH = {
     "LOGIN_SERIALIZER": "accounts.serializers.CustomLoginSerializer",
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserDetailSerializer',
+
     "USE_JWT": True,
     "JWT_AUTH_COOKIE": "kee-driver-auth",
     "JWT_AUTH_REFRESH_COOKIE": "kee-driver-refresh-token",
