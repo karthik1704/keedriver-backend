@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-1-2kfp%+^+7h@d$#bj(c$7d%t+01taskh-$647e#!s3=!76_qv"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -37,7 +37,9 @@ ALLOWED_HOSTS = [
     "65.0.184.137",
     "43.205.194.9",
     "api.keedriver.com",
-    "www.api.keedriver.com"
+    "www.api.keedriver.com",
+    "devapi.keedriver.com",
+    "www.devapi.keedriver.com"
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -107,18 +109,18 @@ WSGI_APPLICATION = "keedriver.wsgi.application"
 
 if DEBUG:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
         # "default": {
-        #     "ENGINE": "django.db.backends.postgresql",
-        #     "NAME": "keedriver",
-        #     "USER": "keedriver",
-        #     "PASSWORD": "dAAPeApoCrPY3XulD6kA",
-        #     "HOST": "keedriver-1.cc50dbdrqhe5.ap-south-1.rds.amazonaws.com",
-        #     "PORT": "5432",
+        #     "ENGINE": "django.db.backends.sqlite3",
+        #     "NAME": BASE_DIR / "db.sqlite3",
         # }
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "keedriver_dev",
+            "USER": env("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD"),
+            "HOST": env("DB_HOST"),
+            "PORT": env("DB_PORT"),
+        }
     }
 
 if not DEBUG:
