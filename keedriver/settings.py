@@ -205,7 +205,7 @@ REST_AUTH = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10) if DEBUG else timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=2) if DEBUG else timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
 }
 
