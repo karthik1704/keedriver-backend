@@ -45,7 +45,7 @@ class MyUser(AbstractBaseUser,PermissionsMixin):
     # def get_email_field_name(self):
     #     return self.EMAIL_FIELD
 
-    def get_full_name(self):
+    def get_full_name(self)->str:
         return f"{self.first_name} {self.last_name if self.last_name  else ''}"
 
     def get_short_name(self):

@@ -3,6 +3,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.models import Group
 
+from rangefilter.filters import (
+    DateRangeFilterBuilder,
+    # DateTimeRangeFilterBuilder,
+    # NumericRangeFilterBuilder,
+)
+
 from .models import Customer, Driver, MyUser, DriverProfile, CustomerProfile
 
 
@@ -56,7 +62,7 @@ class DriverForm(forms.ModelForm):
 class CustomerAdmin(admin.ModelAdmin):
     form = CustomerForm
     list_display = ("phone", "first_name", "last_name", "is_customer")
-    list_filter = ("date_joined",)
+    list_filter = ("date_joined",("date_joined", DateRangeFilterBuilder()),)
     ordering = ["date_joined"]
     search_fields = ("phone", "first_name", "last_name", "email")
 

@@ -39,7 +39,7 @@ ALLOWED_HOSTS = [
     "api.keedriver.com",
     "www.api.keedriver.com",
     "devapi.keedriver.com",
-    "www.devapi.keedriver.com"
+    "www.devapi.keedriver.com",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "django_filters",
     "drf_spectacular",
+    "import_export",
+    "rangefilter",
     # apps
     "accounts.apps.AccountsConfig",
     "trips",
@@ -109,18 +111,18 @@ WSGI_APPLICATION = "keedriver.wsgi.application"
 
 if DEBUG:
     DATABASES = {
-        # "default": {
-        #     "ENGINE": "django.db.backends.sqlite3",
-        #     "NAME": BASE_DIR / "db.sqlite3",
-        # }
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "keedriver_dev",
-            "USER": env("DB_USER"),
-            "PASSWORD": env("DB_PASSWORD"),
-            "HOST": env("DB_HOST"),
-            "PORT": env("DB_PORT"),
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
+        # "default": {
+        #     "ENGINE": "django.db.backends.postgresql",
+        #     "NAME": "keedriver_dev",
+        #     "USER": env("DB_USER"),
+        #     "PASSWORD": env("DB_PASSWORD"),
+        #     "HOST": env("DB_HOST"),
+        #     "PORT": env("DB_PORT"),
+        # }
     }
 
 if not DEBUG:
@@ -195,8 +197,7 @@ AUTHENTICATION_BACKENDS = [
 
 REST_AUTH = {
     "LOGIN_SERIALIZER": "accounts.serializers.CustomLoginSerializer",
-    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserDetailSerializer',
-
+    "USER_DETAILS_SERIALIZER": "accounts.serializers.CustomUserDetailSerializer",
     "USE_JWT": True,
     "JWT_AUTH_COOKIE": "kee-driver-auth",
     "JWT_AUTH_REFRESH_COOKIE": "kee-driver-refresh-token",

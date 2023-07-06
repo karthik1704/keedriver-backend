@@ -14,6 +14,8 @@ from rest_framework.mixins import (
 )
 from rest_framework.generics import GenericAPIView
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as drfilters
+from django_filters import widgets
 from rest_framework.response import Response
 from rest_framework import status
 from keedriver.permissions import IsCustomer, IsDriver
@@ -25,6 +27,7 @@ from .serializers import (
     TripTypeUpdateSerializer,
     TripSerializer,
     TripTypeDetailSerializer,
+    TripDashboardSerializer,
 )
 from accounts.models import Customer
 from django.db.models import Count
@@ -128,6 +131,14 @@ class TripTypesCreate(GenericAPIView, CreateModelMixin):
         return self.create(request, *args, **kwargs)
 
 
+class TripFilter(drfilters.FilterSet):
+    
+    # created_at = drfilters.DateFilter(field_name="created_at", lookup_expr='exact', )
+
+    class Meta:
+        model = Trip
+        fields = ['trip_status', 'amount_status', 'created_at']
+
 class TripViewset(viewsets.ModelViewSet):
     queryset = Trip.objects.all().order_by("trip_status")
     serializer_class = TripSerializer
@@ -137,7 +148,12 @@ class TripViewset(viewsets.ModelViewSet):
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
-    filterset_fields = ["trip_status", "amount_status"]
+    # filterset_fields = {
+    #     "trip_status": ["exact"],
+    #     "amount_status": ["exact"],
+    #     "created_at": ["gte", "lte", "exact",],
+    # }
+    filterset_class = TripFilter
     ordering_fields = [
         "trip_status",
     ]
@@ -188,6 +204,7 @@ class TripTypeAutocomplete(autocomplete.Select2QuerySetView):
 
 
 class CustomerTripViewset(viewsets.ModelViewSet):
+    queryset = Trip.objects.none()
     serializer_class = TripSerializer
     permission_classes = [permissions.IsAuthenticated, IsCustomer]
     filter_backends = [
@@ -207,7 +224,7 @@ class CustomerTripViewset(viewsets.ModelViewSet):
 
 
 class DriverTripViewset(viewsets.ModelViewSet):
-    # queryset = Trip.objects.all()
+    queryset = Trip.objects.none()
     serializer_class = TripSerializer
     permission_classes = [permissions.IsAuthenticated, IsDriver]
     filter_backends = [
@@ -227,10 +244,10 @@ class DriverTripViewset(viewsets.ModelViewSet):
 
 
 class DashboardView(APIView):
+    serializer_class = TripDashboardSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
     def get(self, request, format=None):
-
         today = make_aware(datetime.now())
 
         today_trips = Trip.objects.filter(
@@ -244,9 +261,7 @@ class DashboardView(APIView):
             created_at__gt=today - timedelta(days=30),
         ).count()
 
-        trip_active = (
-            Trip.objects.filter(trip_status="ACTIVE").count()
-        )
+        trip_active = Trip.objects.filter(trip_status="ACTIVE").count()
         trip_completed = Trip.objects.filter(trip_status="COMPLETED").count()
 
         total_trips = Trip.objects.all().count()
@@ -296,9 +311,10 @@ class DashboardView(APIView):
 
         trips_lines = (
             Trip.objects.filter(
-             created_at__lte=today,
-             created_at__gt=today - timedelta(days=30),
-            ).annotate(
+                created_at__lte=today,
+                created_at__gt=today - timedelta(days=30),
+            )
+            .annotate(
                 day=TruncDate("created_at")
             )  # Truncate to month and add to select list
             .values("day")  # Group By month
@@ -315,7 +331,6 @@ class DashboardView(APIView):
                     "active_trips": trip_active,
                     "trip_completed": trip_completed,
                     "cancelled_trips": cancelled_trips,
-
                 },
                 "amount": {
                     "today": today_amount,

@@ -8,10 +8,20 @@ from .utils import gernerate_message
 from django.utils import timezone
 
 from dal import autocomplete
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin, ExportActionMixin, ExportMixin
+from import_export.fields import Field
+from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
+
+from rangefilter.filters import (
+    DateRangeFilterBuilder,
+    # DateTimeRangeFilterBuilder,
+    # NumericRangeFilterBuilder,
+)
+
 
 from wallets.models import DriverWalletTransaction
-
-
+from accounts.models import Customer
 
 
 # Register your models here.
@@ -57,12 +67,12 @@ class TripForm(forms.ModelForm):
             self.fields["trip_parent_type"].initial = (
                 TripType.objects.get(pk=child_id).get_parent().id
             )
-        else :
+        else:
             local_trip = TripType.objects.all().first()
             if local_trip:
-                self.fields["trip_parent_type"].initial = (local_trip.id)
-                child_trip =  local_trip.get_children().first()
-                self.fields["trip_type"].initial = (child_trip.id)
+                self.fields["trip_parent_type"].initial = local_trip.id
+                child_trip = local_trip.get_children().first()
+                self.fields["trip_type"].initial = child_trip.id
         self.fields["driver_based_on_loaction"].initial = True
 
 
@@ -97,9 +107,59 @@ def make_trip_completed_amount_paid(modeladmin, request, queryset):
         obj.save()
 
 
-class TripAdmin(admin.ModelAdmin):
-    change_form_template = "admin/trips/change_form.html"
+class TripResource(resources.ModelResource):
+    first_name = Field(
+        attribute="customer__first_name", column_name="first_name", readonly=True
+    )
+    last_name = Field(
+        attribute="customer__last_name", column_name="last_name", readonly=True
+    )
+    phone = Field(
+        attribute="customer__phone",
+        column_name="phone",
+    )
+    driver_first_name = Field(
+        attribute="driver__first_name", column_name="driver_first_name", readonly=True
+    )
+    driver_last_name = Field(
+        attribute="driver__last_name", column_name="driver_last_name", readonly=True
+    )
+    driver_phone = Field(
+        attribute="driver__phone",
+        column_name="driver_phone",
+    )
 
+    trip_type = Field(
+        attribute="trip_type",
+        column_name="trip_type",
+        widget=ForeignKeyWidget(
+            TripType,
+            field="name",
+        ),
+    )
+
+    class Meta:
+        model = Trip
+        export_order = (
+            "id",
+            "trip_id",
+            "customer",
+            "first_name",
+            "last_name",
+            "phone",
+            "driver",
+            "driver_first_name",
+            "driver_last_name",
+            "driver_phone",
+        )
+
+
+class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
+    change_form_template = "admin/trips/change_form.html"
+    import_export_change_list_template = (
+        "admin/import_export/change_list_import_export.html"
+    )
+    resource_classes = [TripResource]
     form = TripForm
 
     list_display = (
@@ -117,7 +177,12 @@ class TripAdmin(admin.ModelAdmin):
     search_fields = ["customer_phone", "trip_id"]
     autocomplete_fields = ["customer"]
     readonly_fields = ("created_at", "updated_at", "drop_time")
-    list_filter = ("trip_status", "amount_status")
+    list_filter = (
+        "trip_status",
+        "amount_status",
+        ("created_at", DateRangeFilterBuilder()),
+        ("pickup_time", DateRangeFilterBuilder()),
+    )
     ordering = ("trip_status",)
     actions = (make_trip_completed, make_amount_paid, make_trip_completed_amount_paid)
 
@@ -157,6 +222,7 @@ class TripAdmin(admin.ModelAdmin):
         if obj.driver:
             return obj.driver.phone
         return None
+
     def formfield_for_dbfield(self, *args, **kwargs):
         formfield = super().formfield_for_dbfield(*args, **kwargs)
 
@@ -202,8 +268,8 @@ class TripAdmin(admin.ModelAdmin):
             local_time = timezone.localtime(data.pickup_time)
             date = local_time.strftime("%d/%m/%y")
             time = local_time.strftime("%I:%M %p")
-            driver_name = data.driver.get_full_name() if data.driver else ''
-            driver_phone =   data.driver.phone if data.driver else ''
+            driver_name = data.driver.get_full_name() if data.driver else ""
+            driver_phone = data.driver.phone if data.driver else ""
             c_message = gernerate_message(
                 data.customer.get_full_name(),
                 data.customer.phone,
