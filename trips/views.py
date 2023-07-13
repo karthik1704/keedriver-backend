@@ -13,6 +13,8 @@ from rest_framework.mixins import (
     UpdateModelMixin,
 )
 from rest_framework.generics import GenericAPIView
+import django_filters
+from django.db import models as django_models
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as drfilters
 from django_filters import widgets
@@ -133,11 +135,16 @@ class TripTypesCreate(GenericAPIView, CreateModelMixin):
 
 class TripFilter(drfilters.FilterSet):
     
-    # created_at = drfilters.DateFilter(field_name="created_at", lookup_expr='exact', )
+    created_at_gte = django_filters.DateTimeFilter(field_name='created_at', lookup_expr='lte')
 
     class Meta:
         model = Trip
-        fields = ['trip_status', 'amount_status', 'created_at']
+        fields = {
+            "trip_status": ["exact"],
+            "amount_status": ["exact"],
+            "created_at": ["gte", "lte", ],
+        }
+  
 
 class TripViewset(viewsets.ModelViewSet):
     queryset = Trip.objects.all().order_by("trip_status")
