@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "dal_select2",
     #
     "django.contrib.admin",
+    "django.contrib.gis",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "import_export",
     "rangefilter",
+    "mapwidgets",
     # apps
     "accounts.apps.AccountsConfig",
     "trips",
@@ -111,18 +113,26 @@ WSGI_APPLICATION = "keedriver.wsgi.application"
 
 if DEBUG:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
         # "default": {
-        #     "ENGINE": "django.db.backends.postgresql",
+        #     "ENGINE": "django.db.backends.sqlite3",
+        #     "NAME": BASE_DIR / "db.sqlite3",
+        # }
+        # "default": {
+        #    "ENGINE": "django.db.backends.postgresql",
         #     "NAME": "keedriver_dev",
         #     "USER": env("DB_USER"),
         #     "PASSWORD": env("DB_PASSWORD"),
         #     "HOST": env("DB_HOST"),
         #     "PORT": env("DB_PORT"),
-        # }
+        # } ,
+         "default": {
+           "ENGINE": "django.contrib.gis.db.backends.postgis",
+            "NAME": "keedriver_dev",
+            "USER": 'postgres',
+            "PASSWORD": 'postgres',
+            "HOST": 'localhost',
+            "PORT": env("DB_PORT"),
+        } 
     }
 
 if not DEBUG:
@@ -237,6 +247,18 @@ LOCATION_FIELD = {
     "provider.google.map.type": "ROADMAP",
 }
 
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocationName", "chennai"),
+        ("GooglePlaceAutocompleteOptions", {'componentRestrictions': {'country': 'in'}}),
+        ("markerFitZoom", 12),
+        ("scrollWheel", False),
+        ("streetViewControl", True),
+    ),
+    "GOOGLE_MAP_API_KEY": "AIzaSyC8Wz-5E-JkgNLy-W0L4OGUp56mqvjVcD4",
+}
+
 # API Documentation
 SPECTACULAR_SETTINGS = {
     "TITLE": "Keedriver API",
@@ -244,3 +266,5 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+GDAL_LIBRARY_PATH  = r'C:\OSGeo4W\bin\gdal307'

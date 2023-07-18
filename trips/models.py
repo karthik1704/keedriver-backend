@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from django.conf import settings
 from django.template.defaultfilters import slugify
 
@@ -45,7 +46,7 @@ TRIP_STATUS = [
 DEDUCTION_PERCENTAGE  = decimal.Decimal(10.00)
 
 
-class Trip(models.Model):
+class Trip(gis_models.Model):
     # Trip id "KD" prefix ,follow by current year and trip primary key
     trip_id = models.CharField(
         unique=True,
@@ -68,9 +69,11 @@ class Trip(models.Model):
 
     pickup_area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
     pickup_location = models.CharField(max_length=255, blank=True, null=True)
+    pickup_coordinates = gis_models.PointField(blank=True, null=True)
 
     pickup_time = models.DateTimeField(blank=True, null=True)
     drop_location = models.CharField(max_length=255, blank=True, null=True)
+    pickup_coordinates = gis_models.PointField(blank=True, null=True)
     drop_time = models.DateTimeField(blank=True, null=True)
     landmark = models.CharField(max_length=255, blank=True, null=True)
 

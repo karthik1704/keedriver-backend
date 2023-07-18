@@ -19,6 +19,10 @@ from rangefilter.filters import (
     # NumericRangeFilterBuilder,
 )
 
+from django.contrib.gis.db import models
+from mapwidgets.widgets import GooglePointFieldWidget
+
+    
 
 from wallets.models import DriverWalletTransaction
 from accounts.models import Customer
@@ -185,7 +189,9 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
     )
     ordering = ("trip_status",)
     actions = (make_trip_completed, make_amount_paid, make_trip_completed_amount_paid)
-
+    formfield_overrides = {
+        models.PointField: {"widget": GooglePointFieldWidget}
+    }
     fieldsets = (
         ("Customer", {"fields": ("customer",)}),
         (
@@ -196,6 +202,7 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
                     "trip_type",
                     "pickup_area",
                     "pickup_location",
+                    "pickup_coordinates",
                     "pickup_time",
                     "drop_location",
                     "drop_time",
