@@ -70,10 +70,10 @@ class Trip(gis_models.Model):
     pickup_area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
     pickup_location = models.CharField(max_length=255, blank=True, null=True)
     pickup_coordinates = gis_models.PointField(blank=True, null=True)
-
     pickup_time = models.DateTimeField(blank=True, null=True)
+
     drop_location = models.CharField(max_length=255, blank=True, null=True)
-    pickup_coordinates = gis_models.PointField(blank=True, null=True)
+    drop_coordinates = gis_models.PointField(blank=True, null=True)
     drop_time = models.DateTimeField(blank=True, null=True)
     landmark = models.CharField(max_length=255, blank=True, null=True)
 

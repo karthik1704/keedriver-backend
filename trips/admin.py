@@ -205,6 +205,7 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
                     "pickup_coordinates",
                     "pickup_time",
                     "drop_location",
+                    "drop_coordinates",
                     "drop_time",
                     "landmark",
                 )
@@ -219,6 +220,9 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
             {"fields": ("amount", "amount_status", "trip_status")},
         ),
     )
+
+    class Media:
+        js = ('js/customtrip.js', )
 
     @admin.display(ordering="customer__phone", description="Customer contact")
     def customer_contact(self, obj):

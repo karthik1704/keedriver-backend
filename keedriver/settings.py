@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     # 3-rd party before admin
     "dal",
     "dal_select2",
+ 
+
     #
     "django.contrib.admin",
     "django.contrib.gis",
