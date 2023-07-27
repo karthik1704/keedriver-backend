@@ -46,6 +46,7 @@ class TripTypeListView(
     queryset = TripType.objects.all()
     serializer_class = TripTypeSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         q = TripType.objects.filter(depth=1).order_by("id")
@@ -66,6 +67,8 @@ class TripTypeRDView(
     queryset = TripType.objects.all().order_by("-id")
     serializer_class = TripTypeDetailSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
+
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -95,6 +98,8 @@ class TripTypeUpdateView(
     queryset = TripType.objects.all().order_by("-id")
     serializer_class = TripTypeUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
+
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
@@ -128,6 +133,8 @@ class TripTypesCreate(GenericAPIView, CreateModelMixin):
     queryset = TripType.objects.all()
     serializer_class = TripTypeCreateSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
+
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
@@ -150,6 +157,7 @@ class TripViewset(viewsets.ModelViewSet):
     queryset = Trip.objects.all().order_by("trip_status")
     serializer_class = TripSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,

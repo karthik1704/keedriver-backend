@@ -111,18 +111,18 @@ WSGI_APPLICATION = "keedriver.wsgi.application"
 
 if DEBUG:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
         # "default": {
-        #     "ENGINE": "django.db.backends.postgresql",
-        #     "NAME": "keedriver_dev",
-        #     "USER": env("DB_USER"),
-        #     "PASSWORD": env("DB_PASSWORD"),
-        #     "HOST": env("DB_HOST"),
-        #     "PORT": env("DB_PORT"),
+        #     "ENGINE": "django.db.backends.sqlite3",
+        #     "NAME": BASE_DIR / "db.sqlite3",
         # }
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "keedriver_dev",
+            "USER": env("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD"),
+            "HOST": env("DB_HOST"),
+            "PORT": env("DB_PORT"),
+        }
     }
 
 if not DEBUG:
@@ -218,7 +218,7 @@ REST_FRAMEWORK = {
     ],
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PERMISSION_CLASSES": [ "rest_framework.permissions.AllowAny", "rest_framework.permissions.IsAuthenticated",],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "keedriver.utils.CustomPagination",
     "PAGE_SIZE": 15,
