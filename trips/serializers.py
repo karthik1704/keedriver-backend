@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from typing import Union
+from drf_extra_fields.geo_fields import PointField
 
 from .models import Trip, TripType
 
@@ -25,13 +26,12 @@ class TripTypeSerializer(serializers.ModelSerializer):
             "depth",
             "numchild",
         )
-       
-
 
 
 class TripTypeDetailSerializer(TripTypeSerializer):
     children = TripTypeChildrenSerializer(many=True, read_only=True)
-    parent= TripTypeSerializer(read_only=True)
+    parent = TripTypeSerializer(read_only=True)
+
     class Meta:
         model = TripType
         exclude = (
@@ -39,15 +39,18 @@ class TripTypeDetailSerializer(TripTypeSerializer):
             "depth",
             "numchild",
         )
+
     # def get_children(self, obj):
-  
+
     #     return obj.get_children()
 
     # def get_parent(self, obj):
     #     return obj.get_parent().id if obj.get_parent() else None
 
+
 class TripTypeUpdateSerializer(serializers.ModelSerializer):
-    parent_id= serializers.CharField(allow_null=True)
+    parent_id = serializers.CharField(allow_null=True)
+
     class Meta:
         model = TripType
         exclude = (
@@ -55,7 +58,7 @@ class TripTypeUpdateSerializer(serializers.ModelSerializer):
             "depth",
             "numchild",
         )
-       
+
     # def update(self, instance, validated_data):
     #     parent_id = validated_data.get("parent_id")
     #     slug = validated_data.get("slug")
@@ -65,9 +68,10 @@ class TripTypeUpdateSerializer(serializers.ModelSerializer):
     #         parent = TripType.objects.get(pk=parent_id)
     #         print(parent)
     #         parent.move(instance,  pos=None)
-            
+
     #     return instance
-      
+
+
 class TripTypeCreateSerializer(TripTypeSerializer):
     parent_id = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
@@ -92,23 +96,25 @@ class TripTypeCreateSerializer(TripTypeSerializer):
 class TripSerializer(serializers.ModelSerializer):
     driver_name = serializers.SerializerMethodField(read_only=True)
     customer_name = serializers.SerializerMethodField(read_only=True)
+    pickup_coordinates = PointField(required=False)
+    drop_coordinates = PointField(required=False)
 
     class Meta:
         model = Trip
         fields = "__all__"
 
-    def get_driver_name(self, obj)->Union[str,None]:
+    def get_driver_name(self, obj) -> Union[str, None]:
         if obj.driver:
             return obj.driver.get_full_name()
         return None
 
-    def get_customer_name(self, obj)->Union[str,None]:
+    def get_customer_name(self, obj) -> Union[str, None]:
         return obj.customer.get_full_name()
 
 
-## Dashboard   
+## Dashboard
+
 
 class TripDashboardSerializer(serializers.Serializer):
-
     class Meta:
-        fields="__all__"                    
+        fields = "__all__"

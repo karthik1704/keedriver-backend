@@ -293,6 +293,9 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
                 data.trip_id,
                 data.pickup_location,
                 False,
+                data.pickup_coordinates,
+                data.drop_coordinates,
+
             )
             d_message = gernerate_message(
                 data.customer.get_full_name(),
@@ -306,6 +309,8 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
                 data.trip_id,
                 data.pickup_location,
                 True,
+                data.pickup_coordinates,
+                data.drop_coordinates,
             )
             extra_content.update({"c_message": c_message})
             extra_content.update({"d_message": d_message})

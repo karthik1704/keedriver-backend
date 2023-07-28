@@ -18,7 +18,7 @@ Note: If you contact driver directly for further Trips , Company is not responsi
 
 
 def gernerate_message(
-    name, cphone, trip_type, drop_location, date, time, dname, dphone, trip_id, pick_location , is_driver
+    name, cphone, trip_type, drop_location, date, time, dname, dphone, trip_id, pick_location , is_driver, pcoordinate, dcoordinate
 ):
     msg=''
 
@@ -42,6 +42,8 @@ Your booking details are below %0a
 *Pickup location* {pick_location } %0a
 %0a
 {drop_location_not_empty} %0a
+%0a
+*Pickup Coordinates* https://maps.google.com?q={pcoordinate.coords[1]},{pcoordinate.coords[0]}
 %0a
 *Date:* {date} %0a
 %0a
@@ -73,7 +75,11 @@ Your customer details are below %0a
 %0a
 *Pickup location* {pick_location } %0a
 %0a
+*Pickup Coordinates* https://maps.google.com?q={pcoordinate.coords[1]},{pcoordinate.coords[0]}
+%0a
 {drop_location_not_empty} %0a
+%0a
+*Drop Coordinates* https://maps.google.com?q={dcoordinate.coords[1]},{dcoordinate.coords[0]}
 %0a
 *Date:* {date} %0a
 %0a
