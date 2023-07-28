@@ -8,7 +8,6 @@ import decimal
 
 from treebeard.mp_tree import MP_Node
 from django.utils.safestring import mark_safe
-from location_field.models.plain import PlainLocationField
 from accounts.models import Customer, Driver
 from areas.models import Area
 
