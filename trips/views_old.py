@@ -142,15 +142,20 @@ class TripTypesCreate(GenericAPIView, CreateModelMixin):
 
 class TripFilter(drfilters.FilterSet):
     
-    created_at_gte = django_filters.DateTimeFilter(field_name='created_at', lookup_expr='lte')
 
     class Meta:
         model = Trip
         fields = {
             "trip_status": ["exact"],
             "amount_status": ["exact"],
-            "created_at": ["gte", "lte", ],
+            "created_at": ["gte", "lte", "exact"],
         }
+    
+    filter_overrides = {
+        django_models.DateTimeField: {
+            'filter_class': django_filters.IsoDateTimeFilter
+        },
+    }
   
 
 class TripViewset(viewsets.ModelViewSet):
