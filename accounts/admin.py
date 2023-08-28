@@ -81,6 +81,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
 class DriverAdmin(admin.ModelAdmin):
     form = DriverForm
+    inlines = (DriverProfileAdmin,)
     list_display = ("phone", "first_name", "last_name", "driver_exp_date", "is_driver")
     list_filter = ("date_joined",)
     search_fields = ("phone", "first_name", "last_name", "email")
@@ -104,11 +105,11 @@ class DriverAdmin(admin.ModelAdmin):
    
 
 
-    def get_inlines(self, request, obj=None):
-        if obj:
-            return [DriverProfileAdmin]
-        else:
-            return []
+    # def get_inlines(self, request, obj=None):
+    #     if obj:
+    #         return [DriverProfileAdmin]
+    #     else:
+    #         return []
     
     
     @admin.display(ordering="driverprofile__license_expiry_date", description="license exp date")
@@ -129,11 +130,11 @@ class DriverAdmin(admin.ModelAdmin):
 
     # def response_add(self, request: HttpRequest, obj: _ModelT, post_url_continue: Optional[str] = ...) -> HttpResponse:
     #     return super().response_add(request, obj, post_url_continue)
-    def response_add(self, request, obj, post_url_continue=None):
-        if '_continue' not in request.POST:
-            return HttpResponseRedirect("../%s" % obj.id)
-        else:
-            return super(DriverAdmin, self).response_add(request, obj, post_url_continue)
+    # def response_add(self, request, obj, post_url_continue=None):
+    #     if '_continue' not in request.POST:
+    #         return HttpResponseRedirect("../%s" % obj.id)
+    #     else:
+    #         return super(DriverAdmin, self).response_add(request, obj, post_url_continue)
         
     
     # def driver_exp_date(self, obj):
