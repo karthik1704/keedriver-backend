@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+import datetime
+
 from .managers import CustomerManager, CustomUserManager, DriverManager
 from areas.models import Area
 
@@ -101,7 +103,8 @@ class DriverProfile(models.Model):
     driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
     address =  models.TextField(blank=True, null=True,)
     area= models.ManyToManyField(Area,blank=True)
-    license_number = models.CharField(max_length=50, null=True, blank=True)
+    license_number = models.CharField(max_length=50)
+    license_expiry_date = models.DateField()
     aadhaar_number = models.CharField(max_length=20, null=True, blank=True)
     is_avaliable = models.BooleanField(default=False)
     

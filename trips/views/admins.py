@@ -20,6 +20,9 @@ from django_filters import rest_framework as drfilters
 from django_filters import widgets
 from rest_framework.response import Response
 from rest_framework import status
+
+from datetime import date, timedelta
+
 from keedriver.permissions import IsCustomer, IsDriver
 from accounts.models import Driver
 from trips.models import Trip, TripType
@@ -185,16 +188,22 @@ class DriverAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return Driver.objects.none()
 
-        qs = Driver.objects.all()
+        qs = Driver.objects.filter(driverprofile__license_expiry_date__gte = date.today() + timedelta(days=10)).order_by("first_name")
 
         area = self.forwarded.get("pickup_area", None)
         by_location = self.forwarded.get("driver_based_on_loaction", None)
+        pickup_time = self.forwarded.get("pickup_time", None)
+        # print(pickup_time)
+        # if pickup_time:
+        #     pickup_date = pickup_time.date()
+        #     print(pickup_date)
+
         if by_location:
             if area:
                 # qs = qs.order_by( Case(When(driverprofile__area__in=area, then=0), default=1))
                 qs = qs.filter(driverprofile__area__in=area).order_by("first_name")
         else:
-            qs = Driver.objects.all().order_by("first_name")
+            qs = Driver.objects.filter(driverprofile__license_expiry_date__gte = date.today() + timedelta(days=10)).order_by("first_name")
 
         if self.q:
             qs = qs.filter(
@@ -209,7 +218,7 @@ class TripTypeAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return TripType.objects.none()
 
-        qs = Driver.objects.none()
+        qs = TripType.objects.none()
 
         parent = self.forwarded.get("trip_parent_type", None)
 
