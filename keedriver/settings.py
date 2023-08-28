@@ -36,8 +36,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "65.0.184.137",
     "43.205.194.9",
-    "api.keedriver.com",
-    "www.api.keedriver.com",
+    # "api.keedriver.com",
+    # "www.api.keedriver.com",
     "devapi.keedriver.com",
     "www.devapi.keedriver.com",
 ]
@@ -115,22 +115,22 @@ if DEBUG:
         #     "ENGINE": "django.db.backends.sqlite3",
         #     "NAME": BASE_DIR / "db.sqlite3",
         # }
-        # "default": {
-        #     "ENGINE": "django.db.backends.postgresql",
-        #     "NAME": "keedriver_dev",
-        #     "USER": env("DB_USER"),
-        #     "PASSWORD": env("DB_PASSWORD"),
-        #     "HOST": env("DB_HOST"),
-        #     "PORT": env("DB_PORT"),
-        # }
         "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": "keedriver_dev",
-            "USER": "postgres",
-            "PASSWORD":"postgres",
-            "HOST": "localhost",
+            "USER": env("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD"),
+            "HOST": env("DB_HOST"),
             "PORT": env("DB_PORT"),
         }
+        # "default": {
+        #     "ENGINE": "django.db.backends.postgresql",
+        #     "NAME": "keedriver_dev",
+        #     "USER": "postgres",
+        #     "PASSWORD":"postgres",
+        #     "HOST": "localhost",
+        #     "PORT": env("DB_PORT"),
+        # }
     }
 
 if not DEBUG:
