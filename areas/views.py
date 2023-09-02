@@ -13,6 +13,7 @@ class AreaViewset(viewsets.ModelViewSet):
     queryset = Area.objects.all().order_by('name')
     serializer_class = AreaSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, ]
     filterset_fields = ['city']
     search_fields = ['name','city__name',  ]
@@ -23,6 +24,7 @@ class CityViewset(viewsets.ModelViewSet):
     queryset = City.objects.all().order_by('name')
     serializer_class = CitySerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, ]
     search_fields = ['name', ]
 

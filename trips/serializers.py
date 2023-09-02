@@ -104,3 +104,11 @@ class TripSerializer(serializers.ModelSerializer):
 
     def get_customer_name(self, obj)->Union[str,None]:
         return obj.customer.get_full_name()
+
+
+## Dashboard   
+
+class TripDashboardSerializer(serializers.Serializer):
+
+    class Meta:
+        fields="__all__"                    

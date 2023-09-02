@@ -2,6 +2,16 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.models import Group
+from django.http import HttpResponseRedirect
+from django.utils.html import format_html
+
+from datetime import date, timedelta
+
+from rangefilter.filters import (
+    DateRangeFilterBuilder,
+    # DateTimeRangeFilterBuilder,
+    # NumericRangeFilterBuilder,
+)
 
 from .models import Customer, Driver, MyUser, DriverProfile, CustomerProfile
 
@@ -15,7 +25,9 @@ class CustomerProfileAdmin(admin.StackedInline):
 
 class DriverProfileAdmin(admin.StackedInline):
     model = DriverProfile
-
+    can_delete = False
+    verbose_name_plural = 'Profile'
+    fk_name = 'driver'
 
 class CustomerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -56,7 +68,7 @@ class DriverForm(forms.ModelForm):
 class CustomerAdmin(admin.ModelAdmin):
     form = CustomerForm
     list_display = ("phone", "first_name", "last_name", "is_customer")
-    list_filter = ("date_joined",)
+    list_filter = ("date_joined",("date_joined", DateRangeFilterBuilder()),)
     ordering = ["date_joined"]
     search_fields = ("phone", "first_name", "last_name", "email")
 
@@ -69,10 +81,10 @@ class CustomerAdmin(admin.ModelAdmin):
 
 class DriverAdmin(admin.ModelAdmin):
     form = DriverForm
-    list_display = ("phone", "first_name", "last_name", "is_driver")
+    inlines = (DriverProfileAdmin,)
+    list_display = ("phone", "first_name", "last_name", "driver_exp_date", "is_driver")
     list_filter = ("date_joined",)
     search_fields = ("phone", "first_name", "last_name", "email")
-
     fieldsets = (
         (
             "Driver Information",
@@ -82,6 +94,7 @@ class DriverAdmin(admin.ModelAdmin):
                     "last_name",
                     "email",
                     "phone",
+                   
                 ),
             },
         ),
@@ -89,14 +102,48 @@ class DriverAdmin(admin.ModelAdmin):
          
     )
 
-    def get_inlines(self, request, obj=None):
-        if obj:
-            return [DriverProfileAdmin]
-        else:
-            return []
+   
+
+
+    # def get_inlines(self, request, obj=None):
+    #     if obj:
+    #         return [DriverProfileAdmin]
+    #     else:
+    #         return []
+    
+    
+    @admin.display(ordering="driverprofile__license_expiry_date", description="license exp date")
+    def driver_exp_date(self, obj):
+        if obj.driverprofile:
+            expiry_date = obj.driverprofile.license_expiry_date
+            if expiry_date <= date.today():
+                return format_html(
+                '<b style="color:{};">{}</b>',
+                'red',
+                expiry_date.strftime("%b, %d, %Y"),
+                )
+            return format_html(
+                '<b style="color:{};">{}</b>',
+                'green',
+                expiry_date.strftime("%b, %d, %Y"),
+                )
 
     # def response_add(self, request: HttpRequest, obj: _ModelT, post_url_continue: Optional[str] = ...) -> HttpResponse:
     #     return super().response_add(request, obj, post_url_continue)
+    # def response_add(self, request, obj, post_url_continue=None):
+    #     if '_continue' not in request.POST:
+    #         return HttpResponseRedirect("../%s" % obj.id)
+    #     else:
+    #         return super(DriverAdmin, self).response_add(request, obj, post_url_continue)
+        
+    
+    # def driver_exp_date(self, obj):
+  
+    #     return format_html(
+    #         '<b style="color:{};">{}</b>',
+    #         'red',
+    #         obj.driverprofile.license_expiry_date,
+    #     )
 
 class UserAdmin(AuthUserAdmin):
     model = MyUser

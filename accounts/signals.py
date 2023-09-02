@@ -21,14 +21,14 @@ def save_customer_profile(sender, instance, **kwargs):
 @receiver(post_save, sender=Driver)
 def create_driver_profile(sender, instance, created, **kwargs):
     if created:
-        DriverProfile.objects.create(driver=instance)
+        # DriverProfile.objects.create(driver=instance, license_expiry_date="", license_number="")
         DriverWallet.objects.create(driver=instance,amount=0)
         instance.driverwallet.save()
 
 
-@receiver(post_save, sender=Driver)
-def save_driver_profile(sender, instance, **kwargs):
-    instance.driverprofile.save()
+# @receiver(post_save, sender=Driver)
+# def save_driver_profile(sender, instance, **kwargs):
+#     instance.driverprofile.save()
 
 
 

@@ -29,15 +29,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-1-2kfp%+^+7h@d$#bj(c$7d%t+01taskh-$647e#!s3=!76_qv"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "65.0.184.137",
     "43.205.194.9",
-    "api.keedriver.com",
-    "www.api.keedriver.com"
+    # "api.keedriver.com",
+    # "www.api.keedriver.com",
+    "devapi.keedriver.com",
+    "www.devapi.keedriver.com",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -63,6 +65,8 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "django_filters",
     "drf_spectacular",
+    "import_export",
+    "rangefilter",
     # apps
     "accounts.apps.AccountsConfig",
     "trips",
@@ -107,17 +111,25 @@ WSGI_APPLICATION = "keedriver.wsgi.application"
 
 if DEBUG:
     DATABASES = {
+        # "default": {
+        #     "ENGINE": "django.db.backends.sqlite3",
+        #     "NAME": BASE_DIR / "db.sqlite3",
+        # }
         "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "keedriver_dev",
+            "USER": env("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD"),
+            "HOST": env("DB_HOST"),
+            "PORT": env("DB_PORT"),
         }
         # "default": {
         #     "ENGINE": "django.db.backends.postgresql",
-        #     "NAME": "keedriver",
-        #     "USER": "keedriver",
-        #     "PASSWORD": "dAAPeApoCrPY3XulD6kA",
-        #     "HOST": "keedriver-1.cc50dbdrqhe5.ap-south-1.rds.amazonaws.com",
-        #     "PORT": "5432",
+        #     "NAME": "keedriver_dev",
+        #     "USER": "postgres",
+        #     "PASSWORD":"postgres",
+        #     "HOST": "localhost",
+        #     "PORT": env("DB_PORT"),
         # }
     }
 
@@ -193,8 +205,7 @@ AUTHENTICATION_BACKENDS = [
 
 REST_AUTH = {
     "LOGIN_SERIALIZER": "accounts.serializers.CustomLoginSerializer",
-    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserDetailSerializer',
-
+    "USER_DETAILS_SERIALIZER": "accounts.serializers.CustomUserDetailSerializer",
     "USE_JWT": True,
     "JWT_AUTH_COOKIE": "kee-driver-auth",
     "JWT_AUTH_REFRESH_COOKIE": "kee-driver-refresh-token",
@@ -203,7 +214,7 @@ REST_AUTH = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10) if DEBUG else timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=2) if DEBUG else timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
 }
 
@@ -215,7 +226,7 @@ REST_FRAMEWORK = {
     ],
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PERMISSION_CLASSES": [ "rest_framework.permissions.AllowAny", "rest_framework.permissions.IsAuthenticated",],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "keedriver.utils.CustomPagination",
     "PAGE_SIZE": 15,

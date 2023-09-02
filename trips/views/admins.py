@@ -13,18 +13,26 @@ from rest_framework.mixins import (
     UpdateModelMixin,
 )
 from rest_framework.generics import GenericAPIView
+import django_filters
+from django.db import models as django_models
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as drfilters
+from django_filters import widgets
 from rest_framework.response import Response
 from rest_framework import status
+
+from datetime import date, timedelta
+
 from keedriver.permissions import IsCustomer, IsDriver
 from accounts.models import Driver
-from .models import Trip, TripType
-from .serializers import (
+from trips.models import Trip, TripType
+from trips.serializers import (
     TripTypeSerializer,
     TripTypeCreateSerializer,
     TripTypeUpdateSerializer,
     TripSerializer,
     TripTypeDetailSerializer,
+    TripDashboardSerializer,
 )
 from accounts.models import Customer
 from django.db.models import Count
@@ -41,6 +49,7 @@ class TripTypeListView(
     queryset = TripType.objects.all()
     serializer_class = TripTypeSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         q = TripType.objects.filter(depth=1).order_by("id")
@@ -61,6 +70,8 @@ class TripTypeRDView(
     queryset = TripType.objects.all().order_by("-id")
     serializer_class = TripTypeDetailSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
+
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -90,6 +101,8 @@ class TripTypeUpdateView(
     queryset = TripType.objects.all().order_by("-id")
     serializer_class = TripTypeUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
+
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
@@ -123,21 +136,47 @@ class TripTypesCreate(GenericAPIView, CreateModelMixin):
     queryset = TripType.objects.all()
     serializer_class = TripTypeCreateSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
+
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
 
+class TripFilter(drfilters.FilterSet):
+    
+
+    class Meta:
+        model = Trip
+        fields = {
+            "trip_status": ["exact"],
+            "amount_status": ["exact"],
+            "created_at": ["gte", "lte", "exact"],
+        }
+    
+    filter_overrides = {
+        django_models.DateTimeField: {
+            'filter_class': django_filters.IsoDateTimeFilter
+        },
+    }
+  
+
 class TripViewset(viewsets.ModelViewSet):
     queryset = Trip.objects.all().order_by("trip_status")
     serializer_class = TripSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
-    filterset_fields = ["trip_status", "amount_status"]
+    # filterset_fields = {
+    #     "trip_status": ["exact"],
+    #     "amount_status": ["exact"],
+    #     "created_at": ["gte", "lte", "exact",],
+    # }
+    filterset_class = TripFilter
     ordering_fields = [
         "trip_status",
     ]
@@ -149,16 +188,22 @@ class DriverAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return Driver.objects.none()
 
-        qs = Driver.objects.all()
+        qs = Driver.objects.filter(driverprofile__license_expiry_date__gte = date.today() + timedelta(days=10)).order_by("first_name")
 
         area = self.forwarded.get("pickup_area", None)
         by_location = self.forwarded.get("driver_based_on_loaction", None)
+        pickup_time = self.forwarded.get("pickup_time", None)
+        # print(pickup_time)
+        # if pickup_time:
+        #     pickup_date = pickup_time.date()
+        #     print(pickup_date)
+
         if by_location:
             if area:
                 # qs = qs.order_by( Case(When(driverprofile__area__in=area, then=0), default=1))
                 qs = qs.filter(driverprofile__area__in=area).order_by("first_name")
         else:
-            qs = Driver.objects.all().order_by("first_name")
+            qs = Driver.objects.filter(driverprofile__license_expiry_date__gte = date.today() + timedelta(days=10)).order_by("first_name")
 
         if self.q:
             qs = qs.filter(
@@ -173,7 +218,7 @@ class TripTypeAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return TripType.objects.none()
 
-        qs = Driver.objects.none()
+        qs = TripType.objects.none()
 
         parent = self.forwarded.get("trip_parent_type", None)
 
@@ -187,50 +232,14 @@ class TripTypeAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-class CustomerTripViewset(viewsets.ModelViewSet):
-    serializer_class = TripSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCustomer]
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = ["trip_status", "amount_status"]
-    ordering_fields = [
-        "trip_status",
-    ]
-    search_fields = ["trip_id", "customer__phone", "driver__phone"]
 
-    def get_queryset(self):
-        queryset = Trip.objects.filter(customer=self.request.user)
-        return queryset
-
-
-class DriverTripViewset(viewsets.ModelViewSet):
-    # queryset = Trip.objects.all()
-    serializer_class = TripSerializer
-    permission_classes = [permissions.IsAuthenticated, IsDriver]
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = ["trip_status", "amount_status"]
-    ordering_fields = [
-        "trip_status",
-    ]
-    search_fields = ["trip_id", "customer__phone", "driver__phone"]
-
-    def get_queryset(self):
-        queryset = Trip.objects.filter(driver=self.request.user)
-        return queryset
 
 
 class DashboardView(APIView):
+    serializer_class = TripDashboardSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
     def get(self, request, format=None):
-
         today = make_aware(datetime.now())
 
         today_trips = Trip.objects.filter(
@@ -244,9 +253,7 @@ class DashboardView(APIView):
             created_at__gt=today - timedelta(days=30),
         ).count()
 
-        trip_active = (
-            Trip.objects.filter(trip_status="ACTIVE").count()
-        )
+        trip_active = Trip.objects.filter(trip_status="ACTIVE").count()
         trip_completed = Trip.objects.filter(trip_status="COMPLETED").count()
 
         total_trips = Trip.objects.all().count()
@@ -296,9 +303,10 @@ class DashboardView(APIView):
 
         trips_lines = (
             Trip.objects.filter(
-             created_at__lte=today,
-             created_at__gt=today - timedelta(days=30),
-            ).annotate(
+                created_at__lte=today,
+                created_at__gt=today - timedelta(days=30),
+            )
+            .annotate(
                 day=TruncDate("created_at")
             )  # Truncate to month and add to select list
             .values("day")  # Group By month
@@ -315,7 +323,6 @@ class DashboardView(APIView):
                     "active_trips": trip_active,
                     "trip_completed": trip_completed,
                     "cancelled_trips": cancelled_trips,
-
                 },
                 "amount": {
                     "today": today_amount,

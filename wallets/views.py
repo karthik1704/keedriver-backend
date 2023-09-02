@@ -15,6 +15,7 @@ class AdminDriverWalletViewset(viewsets.ModelViewSet):
     queryset = DriverWallet.objects.all()
     serializer_class = DriverWalletSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, ]
     filterset_fields = ['driver__first_name', 'driver__phone']
     search_fields = ['driver__first_name', 'driver__phone'  ]
@@ -27,6 +28,7 @@ class AdminDriverWalletTransactionViewset(viewsets.ModelViewSet):
     queryset = DriverWalletTransaction.objects.all()
     serializer_class = DriverWalletTransactionSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, ]
     filterset_fields = ['wallet__driver__first_name', 'wallet__driver__phone']
     search_fields = ['wallet__driver__first_name','wallet__driver__phone' ]

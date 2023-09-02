@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from trips.views import DriverAutocomplete, TripTypeAutocomplete
+from trips.views.admins import DriverAutocomplete, TripTypeAutocomplete
 
 from drf_spectacular.views import (
     SpectacularAPIView,

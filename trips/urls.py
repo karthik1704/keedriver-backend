@@ -1,23 +1,25 @@
 from django.urls import include, path
 
 from rest_framework import routers
-from .views import (
+from .views.admins import (
     TripViewset,
     TripTypeListView,
     TripTypesCreate,
     TripTypeRDView,
     TripTypeUpdateView,
-    CustomerTripViewset,
-    DriverTripViewset,
     DashboardView,
-    DashboardCustomerChartView
+    DashboardCustomerChartView,
 )
+
+from .views.customers import CustomerTripViewset
+from .views.drivers import DriverTripViewset
+
 
 router = routers.DefaultRouter()
 # router.register(r'triptypes', TripTypeViewset, basename='trips')
 router.register(r"trips", TripViewset)
-router.register(r"customer/trips", CustomerTripViewset, basename='customer_trips')
-router.register(r"driver/trips", DriverTripViewset, basename='deriver_trips')
+router.register(r"customer/trips", CustomerTripViewset, basename="customer_trips")
+router.register(r"driver/trips", DriverTripViewset, basename="deriver_trips")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

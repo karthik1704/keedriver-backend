@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from typing import Union
+from typing import Union, Optional
 
 from .models import DriverWallet, DriverWalletTransaction
 
@@ -14,7 +14,7 @@ class DriverWalletSerializer(serializers.ModelSerializer):
         model = DriverWallet
         fields='__all__'
         # depth=1
-    def get_driver_name(self, obj):
+    def get_driver_name(self, obj)->Optional[str]:
         return obj.driver.get_full_name()
 
 class DriverWalletTransactionSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class DriverWalletTransactionSerializer(serializers.ModelSerializer):
         model = DriverWalletTransaction
         fields = "__all__"
 
-    def get_driver_name(self, obj) -> Union[str, None]:
+    def get_driver_name(self, obj) ->Optional[str]:
         return obj.wallet.driver.get_full_name()
     
     def get_trip_id(self, obj)-> Union[str, None]:
