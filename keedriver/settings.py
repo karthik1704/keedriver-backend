@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "trips",
     "areas",
     "wallets",
+    "hire_us",
 ]
 
 MIDDLEWARE = [
@@ -117,7 +118,7 @@ if DEBUG:
         # }
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": "keedriver_dev",
+            "NAME": "keedriver_hire",
             "USER": env("DB_USER"),
             "PASSWORD": env("DB_PASSWORD"),
             "HOST": env("DB_HOST"),
