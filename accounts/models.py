@@ -1,16 +1,17 @@
+import datetime
 from typing import Iterable, Optional
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-import datetime
-
-from .managers import CustomerManager, CustomUserManager, DriverManager
 from areas.models import Area
 
+from .managers import CustomerManager, CustomUserManager, DriverManager
+
+
 # Create your models here.
-class MyUser(AbstractBaseUser,PermissionsMixin):
+class MyUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(
         _("Username"), unique=True, blank=True, null=True, max_length=250
     )
@@ -47,7 +48,7 @@ class MyUser(AbstractBaseUser,PermissionsMixin):
     # def get_email_field_name(self):
     #     return self.EMAIL_FIELD
 
-    def get_full_name(self)->str:
+    def get_full_name(self) -> str:
         return f"{self.first_name} {self.last_name if self.last_name  else ''}"
 
     def get_short_name(self):
@@ -57,9 +58,7 @@ class MyUser(AbstractBaseUser,PermissionsMixin):
     #     return self.username
 
     def __str__(self) -> str:
-    
         return f"{self.first_name} {self.last_name if self.last_name  else ''}"
-
 
     # this methods are require to login super user from admin panel
     def has_perm(self, perm, obj=None):
@@ -87,8 +86,8 @@ class CustomerProfile(models.Model):
 
     def __str__(self):
         return self.customer.get_full_name()
-    
-    
+
+
 class Driver(MyUser):
     class Meta:
         proxy = True
@@ -99,14 +98,18 @@ class Driver(MyUser):
         self.is_driver = True
         super().save(*args, **kwargs)
 
+
 class DriverProfile(models.Model):
     driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
-    address =  models.TextField(blank=True, null=True,)
-    area= models.ManyToManyField(Area,blank=True)
+    address = models.TextField(
+        blank=True,
+        null=True,
+    )
+    area = models.ManyToManyField(Area, blank=True)
     license_number = models.CharField(max_length=50)
     license_expiry_date = models.DateField()
     aadhaar_number = models.CharField(max_length=20, null=True, blank=True)
     is_avaliable = models.BooleanField(default=False)
-    
+\
     def __str__(self):
         return self.driver.get_full_name()

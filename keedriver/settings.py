@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
+
 import environ
 
 # Initialise environment variables
@@ -116,22 +117,22 @@ if DEBUG:
         #     "ENGINE": "django.db.backends.sqlite3",
         #     "NAME": BASE_DIR / "db.sqlite3",
         # }
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "keedriver_hire",
-            "USER": env("DB_USER"),
-            "PASSWORD": env("DB_PASSWORD"),
-            "HOST": env("DB_HOST"),
-            "PORT": env("DB_PORT"),
-        }
         # "default": {
         #     "ENGINE": "django.db.backends.postgresql",
         #     "NAME": "keedriver_dev",
-        #     "USER": "postgres",
-        #     "PASSWORD":"postgres",
-        #     "HOST": "localhost",
+        #     "USER": env("DB_USER"),
+        #     "PASSWORD": env("DB_PASSWORD"),
+        #     "HOST": env("DB_HOST"),
         #     "PORT": env("DB_PORT"),
         # }
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "keedriver_hire",
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            "HOST": "localhost",
+            "PORT": env("DB_PORT"),
+        }
     }
 
 if not DEBUG:
@@ -227,7 +228,10 @@ REST_FRAMEWORK = {
     ],
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": [ "rest_framework.permissions.AllowAny", "rest_framework.permissions.IsAuthenticated",],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
+    ],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "keedriver.utils.CustomPagination",
     "PAGE_SIZE": 15,
