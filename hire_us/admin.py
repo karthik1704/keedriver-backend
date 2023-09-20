@@ -149,7 +149,7 @@ class HireTripsReportAdmin(admin.TabularInline):
 
 
 class HireusReportAdmin(admin.ModelAdmin):
-    list_display = ("report_title",)
+    list_display = ("report_title", "billing_start_date", "billing_end_date")
     readonly_fields = ("trip_count", "trip_attended", "amount_per_day", "total_amount")
 
     def get_inlines(self, request, obj=None):
