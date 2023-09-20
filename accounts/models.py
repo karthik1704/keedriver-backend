@@ -3,6 +3,7 @@ from typing import Iterable, Optional
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 import datetime
 
@@ -107,6 +108,6 @@ class DriverProfile(models.Model):
     license_expiry_date = models.DateField()
     aadhaar_number = models.CharField(max_length=20, null=True, blank=True)
     is_avaliable = models.BooleanField(default=False)
-    
+    date_joined = models.DateField(default=timezone.now)
     def __str__(self):
         return self.driver.get_full_name()
