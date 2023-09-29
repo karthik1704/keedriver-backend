@@ -103,7 +103,9 @@ class HireTrips(models.Model):
     )
     trip_start_time = models.TimeField(blank=True, null=True)
     trip_end_time = models.TimeField(blank=True, null=True)
-    trip_hours = models.DurationField(default=timezone.timedelta(hours=0), null=True)
+    trip_hours = models.DurationField(
+        default=timezone.timedelta(hours=0), null=True, blank=True
+    )
 
     def __str__(self) -> str:
         return ""
