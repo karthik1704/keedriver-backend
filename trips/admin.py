@@ -171,7 +171,7 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
         "amount_status",
     )
     search_fields = ["customer_phone", "trip_id"]
-    autocomplete_fields = ["customer"]
+    autocomplete_fields = ["customer", "pickup_area"]
     readonly_fields = ("created_at", "updated_at", "drop_time")
     list_filter = (
         "trip_status",
