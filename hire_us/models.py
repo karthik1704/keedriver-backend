@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 from django.db import models
 from django.forms import ValidationError
 from django.utils import timezone
@@ -7,7 +9,7 @@ from areas.models import Area
 
 # Create your models here.
 
-PAYMENT_STATUS = [("NOT PAID", "Not Paid"), ("PAID", "Paid")]
+PAYMENT_STATUS = [("DRAFT", "Draft"), ("NOT PAID", "Not Paid"), ("PAID", "Paid")]
 TRIP_STATUS = [
     ("ACTIVE", "Active"),
     ("COMPLETED", "Completed"),
@@ -67,9 +69,6 @@ class HireUs(models.Model):
         choices=PAYMENT_STATUS, default="NOT PAID", max_length=150
     )
 
-    total_amount = models.DecimalField(
-        max_digits=19, decimal_places=2, blank=True, null=True
-    )
     trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
 
     # Inculuding and excluding saturday and sunday
@@ -99,10 +98,38 @@ class HireTrips(models.Model):
         null=True,
     )
     trip_date = models.DateField(default=timezone.now)
-    trip_status = models.CharField(choices=HIRE_TRIP_STATUS, default="DRAFT")
+    trip_status = models.CharField(
+        choices=HIRE_TRIP_STATUS, default="DRAFT", blank=True, null=True
+    )
     trip_start_time = models.TimeField(blank=True, null=True)
     trip_end_time = models.TimeField(blank=True, null=True)
-    trip_hours = models.DurationField(default=timezone.timedelta(hours=2), null=True)
+    trip_hours = models.DurationField(default=timezone.timedelta(hours=0), null=True)
+
+    def __str__(self) -> str:
+        return ""
+
+    class Meta:
+        verbose_name = "Hire Trip"
+        verbose_name_plural = "Hire Trips"
+
+    def save(
+        self,
+        force_insert: bool = ...,
+        force_update: bool = ...,
+        using: str | None = ...,
+        update_fields: Iterable[str] | None = ...,
+    ) -> None:
+        if self.trip_start_time and self.trip_end_time:
+            start_time = self.trip_start_time
+            end_time = self.trip_end_time
+            start_time_sec = (
+                start_time.hour * 3600 + start_time.minute * 60 + start_time.second
+            )
+            end_time_sec = end_time.hour * 3600 + end_time.minute * 60 + end_time.second
+            hours = end_time_sec - start_time_sec
+            self.trip_hours = timezone.timedelta(seconds=hours)
+
+        return super().save()
 
 
 class HireusReport(models.Model):
@@ -119,7 +146,7 @@ class HireusReport(models.Model):
         max_digits=19, decimal_places=2, blank=True, null=True
     )
     amount_status = models.CharField(
-        choices=PAYMENT_STATUS, default="NOT PAID", max_length=150
+        choices=PAYMENT_STATUS, default="DRAFT", max_length=150
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -134,17 +161,27 @@ class HireusReport(models.Model):
         trips = self.hire.hire_trips.filter(  # type:ignore
             trip_date__gte=start_date, trip_date__lte=end_date
         )
-        print(trips)
+        trip_count = trips.count()
         date_invoiced = []
+        date_processing = []
         for trip in trips:
             if trip.trip_status == "INVOICED":
                 date_invoiced.append(trip.trip_date)
-        print(date_invoiced)
-        if date_invoiced:
-            print("HI")
-            raise ValidationError(
-                f'These date already invoiced {",".join(map(str, date_invoiced))}'
-            )
+            if trip.trip_status == "INPROCESS":
+                date_processing.append(trip.trip_date)
+
+        if self.amount_status == "DRAFT":
+            if trip_count == 0:
+                raise ValidationError(f"No trips found in between dates")
+            if date_invoiced:
+                raise ValidationError(
+                    f'These date already invoiced {",".join(map(str, date_invoiced))}'
+                )
+            if date_processing:
+                raise ValidationError(
+                    f"""These date still InProcess - please update the date or change date  
+                    {",".join(map(str, date_processing))}"""
+                )
 
         return super().clean()
 
@@ -167,8 +204,7 @@ class DriverReport(models.Model):
 
 class HireTripReport(models.Model):
     report = models.ForeignKey(HireusReport, on_delete=models.CASCADE)
-    driver = models.ForeignKey(Driver, on_delete=models.DO_NOTHING)
     trip_id = models.ForeignKey(HireTrips, on_delete=models.DO_NOTHING)
 
     def __str__(self) -> str:
-        return self.driver.get_full_name()
+        return ""

@@ -65,23 +65,24 @@ def add_driver_reports(sender, instance, created, **kwargs):
 
         hire = HireUs.objects.get(id=hire_id.id)
         trips = hire.hire_trips.filter(  # type:ignore
-            trip_date__gte=start_date, trip_date__lte=end_date
+            trip_date__gte=start_date, trip_date__lte=end_date, trip_status="COMPLETED"
         )
         trip_drivers = trips.order_by().values("driver").distinct()  # type: ignore
         print(trip_drivers)
+
         for drivers in trip_drivers:
             print(drivers["driver"])
             driver_id = drivers["driver"]
             driver = Driver.objects.get(id=driver_id)
             if driver:
                 driver_trips_count = trips.filter(driver=driver_id).count()
+                print(f"this {driver_trips_count}")
                 total = (
                     trips.filter(driver=driver_id).aggregate(Sum("trip_hours"))[
                         "trip_hours__sum"
                     ]
                     or timezone.timedelta()
                 )
-                total_hours = timezone.timedelta(hours=1)
 
                 trips_amount = hire.amount_per_day * driver_trips_count
                 percentange_amount = DEDUCTION_PERCENTAGE / 100 * trips_amount
@@ -97,30 +98,34 @@ def add_driver_reports(sender, instance, created, **kwargs):
                 driver_trips = trips.filter(driver=driver_id)
                 for trip in driver_trips:
                     trip_report = HireTripReport.objects.create(
-                        report=instance, driver=driver, trip_id=trip
+                        report=instance, trip_id=trip
                     )
 
-    if not created:
-        hire_id = instance.hire
-        start_date = instance.billing_start_date
-        end_date = instance.billing_end_date
+        # for trip in trips:
+        #     trip.trip_status = "INVOICED"
+        #     trip.save()
 
-        hire = HireUs.objects.get(id=hire_id.id)
-        trips = hire.hire_trips.filter(  # type:ignore
-            trip_date__gte=start_date, trip_date__lte=end_date
-        )
-        trip_drivers = trips.order_by().values("driver").distinct()  # type: ignore
-        print(trip_drivers)
-        for drivers in trip_drivers:
-            print(drivers["driver"])
-            driver_id = drivers["driver"]
-            driver = Driver.objects.get(id=driver_id)
-            if driver:
-                driver_trips_count = trips.filter(driver=driver_id).count()
-                total = (
-                    trips.filter(driver=driver_id).aggregate(Sum("trip_hours"))[
-                        "trip_hours__sum"
-                    ]
-                    or timezone.timedelta()
-                )
-                print(total)
+    # if not created:
+    #     hire_id = instance.hire
+    #     start_date = instance.billing_start_date
+    #     end_date = instance.billing_end_date
+
+    #     hire = HireUs.objects.get(id=hire_id.id)
+    #     trips = hire.hire_trips.filter(  # type:ignore
+    #         trip_date__gte=start_date, trip_date__lte=end_date
+    #     )
+    #     trip_drivers = trips.order_by().values("driver").distinct()  # type: ignore
+    #     print(trip_drivers)
+    #     for drivers in trip_drivers:
+    #         print(drivers["driver"])
+    #         driver_id = drivers["driver"]
+    #         driver = Driver.objects.get(id=driver_id)
+    #         if driver:
+    #             driver_trips_count = trips.filter(driver=driver_id).count()
+    #             total = (
+    #                 trips.filter(driver=driver_id).aggregate(Sum("trip_hours"))[
+    #                     "trip_hours__sum"
+    #                 ]
+    #                 or timezone.timedelta()
+    #             )
+    #             print(total)
