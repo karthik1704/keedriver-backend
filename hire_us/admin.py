@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from django import forms
@@ -114,7 +116,6 @@ class HireUsAdmin(admin.ModelAdmin):
             },
         ),
     )
-
 
     def get_inlines(self, request, obj=None):
         if obj:
