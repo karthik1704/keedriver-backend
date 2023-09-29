@@ -96,10 +96,6 @@ class DriverAdmin(admin.ModelAdmin):
         "date_joined",
     )
     list_filter = ("date_joined", ("date_joined", DateRangeFilterBuilder()))
-
-    list_display = ("phone", "first_name", "last_name", "driver_exp_date", "is_driver")
-    list_filter = ("date_joined", 'driverprofile__date_joined')
-
     search_fields = ("phone", "first_name", "last_name", "email")
     fieldsets = (
         (

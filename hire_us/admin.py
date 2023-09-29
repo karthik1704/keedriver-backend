@@ -115,6 +115,7 @@ class HireUsAdmin(admin.ModelAdmin):
         ),
     )
 
+
     def get_inlines(self, request, obj=None):
         if obj:
             return [HireTripsInline]
