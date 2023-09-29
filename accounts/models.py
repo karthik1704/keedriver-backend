@@ -102,10 +102,7 @@ class Driver(MyUser):
 
 class DriverProfile(models.Model):
     driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
-    address = models.TextField(
-        blank=True,
-        null=True,
-    )
+    address = models.TextField(blank=True, default="")
     area = models.ManyToManyField(Area, blank=True)
     license_number = models.CharField(max_length=50)
     license_expiry_date = models.DateField()
