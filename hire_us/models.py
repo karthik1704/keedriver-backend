@@ -67,9 +67,6 @@ class HireUs(models.Model):
     amount_per_day = models.DecimalField(
         max_digits=19, decimal_places=2, blank=True, null=True
     )
-    amount_status = models.CharField(
-        choices=PAYMENT_STATUS, default="NOT PAID", max_length=150
-    )
 
     trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
 
@@ -168,11 +165,14 @@ class HireusReport(models.Model):
         trip_count = trips.count()
         date_invoiced = []
         date_processing = []
+        date_draft = []
         for trip in trips:
             if trip.trip_status == "INVOICED":
                 date_invoiced.append(trip.trip_date)
             if trip.trip_status == "INPROCESS":
                 date_processing.append(trip.trip_date)
+            if trip.trip_status == "DRAFT":
+                date_draft.append(trip.trip_date)
 
         if self.amount_status == "DRAFT":
             if trip_count == 0:
@@ -186,12 +186,18 @@ class HireusReport(models.Model):
                     f"""These date still InProcess - please update the date or change date  
                     {",".join(map(str, date_processing))}"""
                 )
-
+            if date_draft:
+                raise ValidationError(
+                    f"""These date still Draft - please update the date or change date  
+                    {",".join(map(str, date_draft))}"""
+                )
         return super().clean()
 
 
 class DriverReport(models.Model):
-    report = models.ForeignKey(HireusReport, on_delete=models.CASCADE)
+    report = models.ForeignKey(
+        HireusReport, related_name="driver_report", on_delete=models.CASCADE
+    )
     driver = models.ForeignKey(Driver, on_delete=models.DO_NOTHING)
     total_working_hours = models.DurationField()
     driver_trip_count = models.IntegerField()
@@ -207,7 +213,9 @@ class DriverReport(models.Model):
 
 
 class HireTripReport(models.Model):
-    report = models.ForeignKey(HireusReport, on_delete=models.CASCADE)
+    report = models.ForeignKey(
+        HireusReport, related_name="hire_trip_report", on_delete=models.CASCADE
+    )
     trip_id = models.ForeignKey(HireTrips, on_delete=models.DO_NOTHING)
 
     def __str__(self) -> str:

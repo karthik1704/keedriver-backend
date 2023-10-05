@@ -13,18 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from trips.views.admins import DriverAutocomplete, TripTypeAutocomplete
-
+from django.contrib import admin
+from django.urls import include, path, re_path
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
 
+from trips.views.admins import DriverAutocomplete, TripTypeAutocomplete
 
 admin.site.site_header = "Kee Driver "
 admin.site.site_title = "Kee Driver Dashboard"
@@ -48,6 +47,7 @@ urlpatterns = [
     path("api/v1/", include("areas.urls")),
     path("api/v1/", include("trips.urls")),
     path("api/v1/", include("wallets.urls")),
+    path("api/v1/", include("hire_us.urls")),
     # YOUR PATTERNS
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # Optional UI:
@@ -58,5 +58,3 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-

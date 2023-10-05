@@ -64,6 +64,8 @@ class HireUsAdmin(admin.ModelAdmin):
         "end_date",
     )
     inlines = (HireTripsInline,)
+    search_fields = ["customer_phone", "hire_id"]
+    autocomplete_fields = ["customer", "pickup_area", "driver"]
     fieldsets = (
         (
             "Customer Information",
@@ -180,6 +182,12 @@ class HireTripsReportAdmin(admin.TabularInline):
 class HireusReportAdmin(admin.ModelAdmin):
     list_display = ("report_title", "billing_start_date", "billing_end_date")
     readonly_fields = ("trip_count", "trip_attended", "amount_per_day", "total_amount")
+    search_fields = [
+        "hire",
+    ]
+    autocomplete_fields = [
+        "hire",
+    ]
     fieldsets = (
         (
             "Customer Information",
