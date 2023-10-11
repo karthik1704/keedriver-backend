@@ -4,14 +4,23 @@ from typing import Any
 
 from django import forms
 from django.contrib import admin
+from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.http.request import HttpRequest
 from django.utils import timezone
+from django.utils.html import format_html
 
 from accounts.models import Driver
 from trips.models import DEDUCTION_PERCENTAGE
 
-from .models import DriverReport, HireTripReport, HireTrips, HireUs, HireusReport
+from .models import (
+    DriverReport,
+    HirePaymentReport,
+    HireTripReport,
+    HireTrips,
+    HireUs,
+    HireusReport,
+)
 
 
 # Register your models here.
@@ -102,7 +111,7 @@ class HireUsAdmin(admin.ModelAdmin):
         (
             "Driver Information",
             {
-                "fields": ("driver",),
+                "fields": ("driver", "driver_cut_percentage"),
             },
         ),
         (
@@ -311,8 +320,70 @@ class HireusReportAdmin(admin.ModelAdmin):
                 for trip in trips:
                     trip.trip_status = "INVOICED"
                     trip.save()
+
+            if (
+                form.initial["amount_status"] != form.cleaned_data["amount_status"]
+                and form.cleaned_data["amount_status"] == "PAID"
+            ):
+                total_driver_amount = obj.driver_report.all().aggregate(
+                    Sum("driver_amount")
+                )["driver_amount__sum"]
+                remaining_amount = obj.total_amount - total_driver_amount
+                hire_amount = obj.total_amount
+
+                hpr = HirePaymentReport.objects.create(
+                    hire_report=obj,
+                    hire_amount=hire_amount,
+                    total_driver_amount=total_driver_amount,
+                    remaining_amount=remaining_amount,
+                )
+                hpr.save()
+
         super().save_model(request, obj, form, change)
+
+
+class HirePaymentReportAdmin(admin.ModelAdmin):
+    readonly_fields = ("cut_percentage", "drivers", "payment_status")
+
+    def drivers(self, obj):
+        dr_list = [dr for dr in obj.hire_report.driver_report.all()]
+        drivers_html = "<div>"
+        for dr in dr_list:
+            drivers_html += (
+                f"<p>{dr.driver.get_full_name()} - {dr.driver_amount}</p><br />"
+            )
+        drivers_html += "</div>"
+        return format_html(drivers_html)  # Customize the HTML as needed
+
+    drivers.short_description = "Driver - Amount"
+
+    def payment_status(self, obj):
+        return obj.hire_report.amount_status
+
+    def cut_percentage(self, obj):
+        return obj.hire_report.cut_percentage
+
+    def has_change_permission(
+        self, request: HttpRequest, obj: Any | None = ...
+    ) -> bool:
+        if obj is not ... and obj:
+            return False
+
+        return super().has_change_permission(request, obj)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if "delete_selected" in actions:
+            del actions["delete_selected"]
+        return actions
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request: HttpRequest, obj: Any | None = ...):
+        return False
 
 
 admin.site.register(HireUs, HireUsAdmin)
 admin.site.register(HireusReport, HireusReportAdmin)
+admin.site.register(HirePaymentReport, HirePaymentReportAdmin)

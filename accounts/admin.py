@@ -10,6 +10,8 @@ from rangefilter.filters import (  # DateTimeRangeFilterBuilder,; NumericRangeFi
     DateRangeFilterBuilder,
 )
 
+from reviews.models import Review
+
 from .models import Customer, CustomerProfile, Driver, DriverProfile, MyUser
 
 # Register your models here.
@@ -24,6 +26,36 @@ class DriverProfileAdmin(admin.StackedInline):
     can_delete = False
     verbose_name_plural = "Profile"
     fk_name = "driver"
+
+
+class CustomerReviews(admin.StackedInline):
+    model = Review
+    can_delete = False
+    extra = 0
+    fk_name = "review_to"
+    max_num = 0
+    classes = ("collapse",)
+    readonly_fields = (
+        "reviewer",
+        "rating",
+        "title",
+        "comment",
+    )
+
+
+class DriverReviews(admin.StackedInline):
+    model = Review
+    can_delete = False
+    extra = 0
+    fk_name = "review_to"
+    max_num = 0
+    classes = ("collapse",)
+    readonly_fields = (
+        "reviewer",
+        "rating",
+        "title",
+        "comment",
+    )
 
 
 class CustomerForm(forms.ModelForm):
@@ -78,14 +110,24 @@ class CustomerAdmin(admin.ModelAdmin):
 
     def get_inlines(self, request, obj=None):
         if obj:
-            return [CustomerProfileAdmin]
+            return [CustomerProfileAdmin, CustomerReviews]
         else:
             return []
+
+    readonly_fields = ("formatted_overall_rating",)
+
+    def formatted_overall_rating(self, obj):
+        overall_rating = obj.overall_rating
+        if overall_rating is not None:
+            return f"{overall_rating:.1f}"
+        return "N/A"
+
+    formatted_overall_rating.short_description = "Overall Rating"
 
 
 class DriverAdmin(admin.ModelAdmin):
     form = DriverForm
-    inlines = (DriverProfileAdmin,)
+    inlines = (DriverProfileAdmin, DriverReviews)
 
     list_display = (
         "phone",
@@ -106,10 +148,21 @@ class DriverAdmin(admin.ModelAdmin):
                     "last_name",
                     "email",
                     "phone",
+                    "formatted_overall_rating",
                 ),
             },
         ),
     )
+
+    readonly_fields = ("formatted_overall_rating",)
+
+    def formatted_overall_rating(self, obj):
+        overall_rating = obj.overall_rating
+        if overall_rating is not None:
+            return f"{overall_rating:.1f}"
+        return "N/A"
+
+    formatted_overall_rating.short_description = "Overall Rating"
 
     # def get_inlines(self, request, obj=None):
     #     if obj:

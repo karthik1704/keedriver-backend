@@ -3,8 +3,9 @@ from typing import Iterable, Optional
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.db.models import Avg
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from areas.models import Area
 
@@ -68,6 +69,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     # this methods are require to login super user from admin panel
     def has_module_perms(self, app_label):
         return self.is_superuser
+
+    @property
+    def overall_rating(self):
+        avg_rating = self.review_user.aggregate(Avg("rating"))["rating__avg"]  # type: ignore
+        return avg_rating
 
 
 class Customer(MyUser):

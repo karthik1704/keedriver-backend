@@ -85,7 +85,7 @@ def add_driver_reports(sender, instance, created, **kwargs):
                 )
 
                 trips_amount = hire.amount_per_day * driver_trips_count
-                percentange_amount = DEDUCTION_PERCENTAGE / 100 * trips_amount
+                percentange_amount = hire.driver_cut_percentage / 100 * trips_amount
                 driver_amount = trips_amount - percentange_amount
                 driver_report = DriverReport.objects.create(
                     report=instance,

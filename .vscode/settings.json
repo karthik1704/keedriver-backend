@@ -12,5 +12,6 @@
         "--profile",
         "black"
     ],
+    "python.analysis.autoImportCompletions": true,
 
 }

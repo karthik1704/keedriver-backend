@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from decimal import Decimal
 
 from django.db import models
 from django.forms import ValidationError
@@ -70,9 +71,13 @@ class HireUs(models.Model):
 
     trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
 
-    # Inculuding and excluding saturday and sunday
+    # Including and excluding saturday and sunday
     include_saturday = models.BooleanField(default=False)
     include_sunday = models.BooleanField(default=False)
+
+    driver_cut_percentage = models.DecimalField(
+        max_digits=4, decimal_places=2, default=Decimal(10.00)
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -220,3 +225,21 @@ class HireTripReport(models.Model):
 
     def __str__(self) -> str:
         return ""
+
+
+class HirePaymentReport(models.Model):
+    hire_report = models.ForeignKey(
+        HireusReport, related_name="payment_report", on_delete=models.CASCADE
+    )
+    hire_amount = models.DecimalField(
+        max_digits=19, decimal_places=2, blank=True, null=True
+    )
+    total_driver_amount = models.DecimalField(
+        max_digits=19, decimal_places=2, blank=True, null=True
+    )
+    remaining_amount = models.DecimalField(
+        max_digits=19, decimal_places=2, blank=True, null=True
+    )
+
+    def __str__(self):
+        return f"Payment report of {self.hire_report.report_title}"
