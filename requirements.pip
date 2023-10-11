@@ -1,5 +1,5 @@
 dj-rest-auth==4.0.0
-Django==4.2.1
+Django==4.2.4
 django-filter==22.1
 django-treebeard==4.7
 djangorestframework==3.14.0
@@ -14,3 +14,4 @@ django-location-field==2.7.0
 drf-spectacular==0.26.2
 django-map-widgets==0.4.1
 django-import-export==3.2.0
+

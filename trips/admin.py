@@ -1,27 +1,23 @@
-from django.contrib import admin
-from django import forms
-from django.http import HttpResponseRedirect
-from treebeard.admin import TreeAdmin
-from treebeard.forms import movenodeform_factory, MoveNodeForm
-from .models import Trip, TripType
-from .utils import gernerate_message
-from django.utils import timezone
-
 from dal import autocomplete
+from django import forms
+from django.contrib import admin
+from django.http import HttpResponseRedirect
+from django.utils import timezone
 from import_export import resources
-from import_export.admin import ImportExportModelAdmin, ExportActionMixin, ExportMixin
+from import_export.admin import ExportActionMixin, ExportMixin, ImportExportModelAdmin
 from import_export.fields import Field
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
-
-from rangefilter.filters import (
+from rangefilter.filters import (  # DateTimeRangeFilterBuilder,; NumericRangeFilterBuilder,
     DateRangeFilterBuilder,
-    # DateTimeRangeFilterBuilder,
-    # NumericRangeFilterBuilder,
 )
+from treebeard.admin import TreeAdmin
+from treebeard.forms import MoveNodeForm, movenodeform_factory
 
-
-from wallets.models import DriverWalletTransaction
 from accounts.models import Customer
+from wallets.models import DriverWalletTransaction
+
+from .models import Trip, TripType
+from .utils import gernerate_message
 
 
 # Register your models here.
@@ -175,7 +171,7 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
         "amount_status",
     )
     search_fields = ["customer_phone", "trip_id"]
-    autocomplete_fields = ["customer"]
+    autocomplete_fields = ["customer", "pickup_area"]
     readonly_fields = ("created_at", "updated_at", "drop_time")
     list_filter = (
         "trip_status",

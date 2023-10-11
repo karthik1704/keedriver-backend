@@ -7,6 +7,7 @@ from .models import City, Area
 class CityAdmin(admin.ModelAdmin):
 
     list_display= ("name", "areas_count", )
+    search_fields = ("name", )
 
 
     @admin.display(description="Areas Count")
@@ -22,6 +23,7 @@ class CityAdmin(admin.ModelAdmin):
 class AreaAdmin(admin.ModelAdmin):
 
     list_display= ("name", "city", )
+    search_fields = ("name", )
 
 
 admin.site.register(City, CityAdmin)
