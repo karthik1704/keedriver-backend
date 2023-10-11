@@ -181,7 +181,7 @@ class HireusReport(models.Model):
 
         if self.amount_status == "DRAFT":
             if trip_count == 0:
-                raise ValidationError(f"No trips found in between dates")
+                raise ValidationError("No trips found in between dates")
             if date_invoiced:
                 raise ValidationError(
                     f'These date already invoiced {",".join(map(str, date_invoiced))}'
