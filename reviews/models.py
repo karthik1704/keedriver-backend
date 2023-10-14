@@ -1,10 +1,18 @@
 from django.db import models
 
 from accounts.models import MyUser
+from trips.models import Trip
 
 
 # Create your models here.
 class Review(models.Model):
+    trip = models.ForeignKey(
+        Trip,
+        related_name="trip_review",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
     reviewer = models.ForeignKey(
         MyUser, related_name="reviewer_user", on_delete=models.CASCADE
     )
