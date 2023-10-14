@@ -1,7 +1,12 @@
+from typing import Any
+
 from dal import autocomplete
 from django import forms
 from django.contrib import admin
+from django.db.models.fields.related import ForeignKey
+from django.forms import BaseInlineFormSet, ModelChoiceField
 from django.http import HttpResponseRedirect
+from django.http.request import HttpRequest
 from django.utils import timezone
 from import_export import resources
 from import_export.admin import ExportActionMixin, ExportMixin, ImportExportModelAdmin
@@ -13,7 +18,8 @@ from rangefilter.filters import (  # DateTimeRangeFilterBuilder,; NumericRangeFi
 from treebeard.admin import TreeAdmin
 from treebeard.forms import MoveNodeForm, movenodeform_factory
 
-from accounts.models import Customer
+from accounts.models import Customer, MyUser
+from reviews.models import Review
 from wallets.models import DriverWalletTransaction
 
 from .models import Trip, TripType
@@ -148,6 +154,35 @@ class TripResource(resources.ModelResource):
             "driver_last_name",
             "driver_phone",
         )
+
+
+class TripReviewsInline(admin.StackedInline):
+    model = Review
+    extra = 0
+    fk_name = "trip"
+    classes = ("collapse",)
+
+    def formfield_for_foreignkey(
+        self, db_field: ForeignKey[Any], request: HttpRequest | None, **kwargs: Any
+    ) -> ModelChoiceField | None:
+        if db_field.name == "reviewer" or db_field.name == "review_to":
+            if request:
+                trips_id = request.resolver_match.kwargs.get("object_id")
+
+                trip = Trip.objects.get(pk=trips_id)
+
+                ids = []
+
+                if trip.customer:
+                    ids.append(trip.customer.pk)
+
+                if trip.driver:
+                    ids.append(trip.driver.pk)
+
+                users = MyUser.objects.filter(pk__in=ids)
+                kwargs["queryset"] = users
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
@@ -298,6 +333,14 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
             extra_content.update({"driver": f"+91{driver_phone}"})
 
         return super().change_view(request, object_id, form_url, extra_content)
+
+    def get_inlines(self, request, obj=None):
+        if obj:
+            return [
+                TripReviewsInline,
+            ]
+        else:
+            return []
 
 
 # CHOICES = MoveNodeForm.mk_dropdown_tree(Category)
