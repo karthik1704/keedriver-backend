@@ -174,10 +174,10 @@ class TripReviewsInline(admin.StackedInline):
                 ids = []
 
                 if trip.customer:
-                    ids.append(trip.customer.pk)
+                    ids.append(trip.customer_id)  # type: ignore
 
                 if trip.driver:
-                    ids.append(trip.driver.pk)
+                    ids.append(trip.driver_id)  # type: ignore
 
                 users = MyUser.objects.filter(pk__in=ids)
                 kwargs["queryset"] = users
