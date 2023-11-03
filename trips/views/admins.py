@@ -1,43 +1,41 @@
-from django.shortcuts import render
-from dal import autocomplete
-from django.db.models import Q
-from django.db.models import Case, When, Sum
-from django.utils.timezone import datetime, timedelta, localdate, make_aware
-from rest_framework import viewsets, permissions, filters
-from rest_framework.views import APIView
-from rest_framework.mixins import (
-    ListModelMixin,
-    RetrieveModelMixin,
-    DestroyModelMixin,
-    CreateModelMixin,
-    UpdateModelMixin,
-)
-from rest_framework.generics import GenericAPIView
-import django_filters
-from django.db import models as django_models
-from django_filters.rest_framework import DjangoFilterBackend
-from django_filters import rest_framework as drfilters
-from django_filters import widgets
-from rest_framework.response import Response
-from rest_framework import status
+from __future__ import annotations
 
+import calendar
 from datetime import date, timedelta
 
+import django_filters
+from dal import autocomplete
+from django.db import models as django_models
+from django.db.models import Case, Count, Q, Sum, When
+from django.db.models.functions import TruncDate, TruncDay, TruncMonth
+from django.shortcuts import render
+from django.utils.timezone import datetime, localdate, make_aware, timedelta
+from django_filters import rest_framework as drfilters
+from django_filters import widgets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import (
+    CreateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from accounts.models import Customer, Driver
 from keedriver.permissions import IsCustomer, IsDriver
-from accounts.models import Driver
 from trips.models import Trip, TripType
 from trips.serializers import (
-    TripTypeSerializer,
-    TripTypeCreateSerializer,
-    TripTypeUpdateSerializer,
-    TripSerializer,
-    TripTypeDetailSerializer,
     TripDashboardSerializer,
+    TripSerializer,
+    TripTypeCreateSerializer,
+    TripTypeDetailSerializer,
+    TripTypeSerializer,
+    TripTypeUpdateSerializer,
 )
-from accounts.models import Customer
-from django.db.models import Count
-from django.db.models.functions import TruncDate, TruncDay, TruncMonth
-import calendar
 
 # Create your views here.
 
@@ -72,7 +70,6 @@ class TripTypeRDView(
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
     permission_classes = [permissions.AllowAny]
 
-
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance:
@@ -102,7 +99,6 @@ class TripTypeUpdateView(
     serializer_class = TripTypeUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
     permission_classes = [permissions.AllowAny]
-
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
@@ -138,14 +134,11 @@ class TripTypesCreate(GenericAPIView, CreateModelMixin):
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
     permission_classes = [permissions.AllowAny]
 
-
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
 
 class TripFilter(drfilters.FilterSet):
-    
-
     class Meta:
         model = Trip
         fields = {
@@ -153,13 +146,11 @@ class TripFilter(drfilters.FilterSet):
             "amount_status": ["exact"],
             "created_at": ["gte", "lte", "exact"],
         }
-    
+
     filter_overrides = {
-        django_models.DateTimeField: {
-            'filter_class': django_filters.IsoDateTimeFilter
-        },
+        django_models.DateTimeField: {"filter_class": django_filters.IsoDateTimeFilter},
     }
-  
+
 
 class TripViewset(viewsets.ModelViewSet):
     queryset = Trip.objects.all().order_by("trip_status")
@@ -188,7 +179,9 @@ class DriverAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return Driver.objects.none()
 
-        qs = Driver.objects.filter(driverprofile__license_expiry_date__gte = date.today() + timedelta(days=10)).order_by("first_name")
+        qs = Driver.objects.filter(
+            driverprofile__license_expiry_date__gte=date.today() + timedelta(days=10)
+        ).order_by("first_name")
 
         area = self.forwarded.get("pickup_area", None)
         by_location = self.forwarded.get("driver_based_on_loaction", None)
@@ -203,7 +196,10 @@ class DriverAutocomplete(autocomplete.Select2QuerySetView):
                 # qs = qs.order_by( Case(When(driverprofile__area__in=area, then=0), default=1))
                 qs = qs.filter(driverprofile__area__in=area).order_by("first_name")
         else:
-            qs = Driver.objects.filter(driverprofile__license_expiry_date__gte = date.today() + timedelta(days=10)).order_by("first_name")
+            qs = Driver.objects.filter(
+                driverprofile__license_expiry_date__gte=date.today()
+                + timedelta(days=10)
+            ).order_by("first_name")
 
         if self.q:
             qs = qs.filter(
@@ -230,9 +226,6 @@ class TripTypeAutocomplete(autocomplete.Select2QuerySetView):
                 qs = qs.filter(Q(name__istartswith=self.q))
 
         return qs
-
-
-
 
 
 class DashboardView(APIView):

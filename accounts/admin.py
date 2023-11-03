@@ -36,6 +36,7 @@ class CustomerReviews(admin.StackedInline):
     max_num = 0
     classes = ("collapse",)
     readonly_fields = (
+        "trip",
         "reviewer",
         "rating",
         "title",
@@ -51,6 +52,7 @@ class DriverReviews(admin.StackedInline):
     max_num = 0
     classes = ("collapse",)
     readonly_fields = (
+        "trip",
         "reviewer",
         "rating",
         "title",
