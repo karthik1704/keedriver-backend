@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "dal",
     "dal_select2",
     #
+    "admin_gradient.apps.AdminGradientConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -93,7 +94,7 @@ ROOT_URLCONF = "keedriver.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -185,9 +186,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-STATIC_ROOT = BASE_DIR / "static/"
+STATIC_ROOT = BASE_DIR / "static_files/"
 STATIC_URL = "/static/"
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 # Base url to serve media files
 MEDIA_URL = "/media/"
 # Path where media is stored
@@ -258,3 +261,8 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+
+LOGIN_REDIRECT_URL = "/"
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

@@ -10,6 +10,7 @@ from rangefilter.filters import (  # DateTimeRangeFilterBuilder,; NumericRangeFi
     DateRangeFilterBuilder,
 )
 
+from keedriver.admin import admin_site
 from reviews.models import Review
 
 from .models import Customer, CustomerProfile, Driver, DriverProfile, MyUser
@@ -304,3 +305,7 @@ class UserAdmin(AuthUserAdmin):
 admin.site.register(MyUser, UserAdmin)
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Driver, DriverAdmin)
+
+admin_site.register(MyUser, UserAdmin)
+admin_site.register(Customer, CustomerAdmin)
+admin_site.register(Driver, DriverAdmin)

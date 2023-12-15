@@ -330,6 +330,8 @@ class DashboardView(APIView):
                     "today": today_joined_drivers,
                 },
                 "trips_line": trips_lines,
+                "commerce": [64, 56, 64,6,43,65],
+                "sci": [48, 64, 44,8,23,69],
             }
         )
 

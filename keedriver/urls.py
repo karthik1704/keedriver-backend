@@ -25,6 +25,8 @@ from drf_spectacular.views import (
 
 from trips.views.admins import DriverAutocomplete, TripTypeAutocomplete
 
+from .admin import admin_site
+
 admin.site.site_header = "Kee Driver "
 admin.site.site_title = "Kee Driver Dashboard"
 admin.site.index_title = "Kee Driver Admin"
@@ -40,7 +42,15 @@ urlpatterns = [
         TripTypeAutocomplete.as_view(),
         name="triptype-autocomplete",
     ),
-    path("admin/", admin.site.urls),
+    path(
+        "admin/",
+        admin.site.urls,
+    ),
+    path(
+        "new-admin/",
+        admin_site.urls,
+    ),
+    path("admin_gr/", include("admin_gradient.urls")),
     path("api/v1/rest/", include("rest_framework.urls")),
     path("api/v1/", include("dj_rest_auth.urls")),
     path("api/v1/", include("accounts.urls")),
