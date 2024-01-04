@@ -111,6 +111,8 @@ class BlockDriverInline(admin.TabularInline):
     model = BlockDriver
     extra = 0
     fk_name = "blocker"
+    autocomplete_fields = ["blocked_user",]
+
     classes = ("collapse",)
 
 
