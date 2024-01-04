@@ -12,7 +12,14 @@ from rangefilter.filters import (  # DateTimeRangeFilterBuilder,; NumericRangeFi
 
 from reviews.models import Review
 
-from .models import Customer, CustomerProfile, Driver, DriverProfile, MyUser
+from .models import (
+    BlockDriver,
+    Customer,
+    CustomerProfile,
+    Driver,
+    DriverProfile,
+    MyUser,
+)
 
 # Register your models here.
 
@@ -100,6 +107,15 @@ class DriverForm(forms.ModelForm):
         required = ("first_name",)
 
 
+class BlockDriverInline(admin.TabularInline):
+    model = BlockDriver
+    extra = 0
+    fk_name = "blocker"
+    autocomplete_fields = ["blocked_user",]
+
+    classes = ("collapse",)
+
+
 class CustomerAdmin(admin.ModelAdmin):
     form = CustomerForm
     list_display = ("phone", "first_name", "last_name", "is_customer")
@@ -112,7 +128,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
     def get_inlines(self, request, obj=None):
         if obj:
-            return [CustomerProfileAdmin, CustomerReviews]
+            return [CustomerProfileAdmin, CustomerReviews, BlockDriverInline]
         else:
             return []
 

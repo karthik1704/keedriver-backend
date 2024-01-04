@@ -179,13 +179,27 @@ class DriverAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return Driver.objects.none()
 
-        qs = Driver.objects.filter(
-            driverprofile__license_expiry_date__gte=date.today() + timedelta(days=10)
-        ).order_by("first_name")
+        customer = self.forwarded.get("customer", None)
+
+        block_ids = list(
+            Customer.objects.get(pk=customer)
+            .blocked_by.all()  # type: ignore
+            .values_list("blocked_user", flat=True)
+        )
+        print(block_ids)
+        qs = (
+            Driver.objects.exclude(pk__in=block_ids)
+            .filter(
+                driverprofile__license_expiry_date__gte=date.today()
+                + timedelta(days=10)
+            )
+            .order_by("first_name")
+        )
 
         area = self.forwarded.get("pickup_area", None)
         by_location = self.forwarded.get("driver_based_on_loaction", None)
         pickup_time = self.forwarded.get("pickup_time", None)
+
         # print(pickup_time)
         # if pickup_time:
         #     pickup_date = pickup_time.date()
@@ -196,10 +210,14 @@ class DriverAutocomplete(autocomplete.Select2QuerySetView):
                 # qs = qs.order_by( Case(When(driverprofile__area__in=area, then=0), default=1))
                 qs = qs.filter(driverprofile__area__in=area).order_by("first_name")
         else:
-            qs = Driver.objects.filter(
-                driverprofile__license_expiry_date__gte=date.today()
-                + timedelta(days=10)
-            ).order_by("first_name")
+            qs = (
+                Driver.objects.exclude(pk__in=block_ids)
+                .filter(
+                    driverprofile__license_expiry_date__gte=date.today()
+                    + timedelta(days=10)
+                )
+                .order_by("first_name")
+            )
 
         if self.q:
             qs = qs.filter(
