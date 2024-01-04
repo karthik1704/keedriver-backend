@@ -53,7 +53,12 @@ class TripForm(forms.ModelForm):
         widgets = {
             "driver": autocomplete.ModelSelect2(
                 "driver-autocomplete",
-                forward=["pickup_area", "driver_based_on_loaction", "pickup_time"],
+                forward=[
+                    "pickup_area",
+                    "driver_based_on_loaction",
+                    "pickup_time",
+                    "customer",
+                ],
             ),
             "trip_type": autocomplete.ModelSelect2(
                 "triptype-autocomplete",

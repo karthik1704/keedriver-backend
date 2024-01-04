@@ -1,14 +1,14 @@
-from django.db import models
-from django.conf import settings
-from django.template.defaultfilters import slugify
-
-from django.utils import timezone
 import decimal
 
-from treebeard.mp_tree import MP_Node
+from django.conf import settings
+from django.db import models
+from django.template.defaultfilters import slugify
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from location_field.models.plain import PlainLocationField
-from accounts.models import Customer, Driver
+from treebeard.mp_tree import MP_Node
+
+from accounts.models import Customer, Driver, MyUser
 from areas.models import Area
 
 
@@ -42,7 +42,7 @@ TRIP_STATUS = [
     ("CANCELLED", "Cancelled"),
 ]
 
-DEDUCTION_PERCENTAGE  = decimal.Decimal(10.00)
+DEDUCTION_PERCENTAGE = decimal.Decimal(10.00)
 
 
 class Trip(models.Model):
@@ -74,7 +74,7 @@ class Trip(models.Model):
     drop_time = models.DateTimeField(blank=True, null=True)
     landmark = models.CharField(max_length=255, blank=True, null=True)
 
-    amount = models.DecimalField(max_digits=19, decimal_places=2 ,blank=True, null=True)
+    amount = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
     amount_status = models.CharField(
         choices=PAYMENT_STATUS, default="NOT PAID", max_length=150
     )
@@ -84,5 +84,3 @@ class Trip(models.Model):
 
     def __str__(self):
         return f"{self.trip_id} - {self.customer.get_full_name()}"
-    
-   

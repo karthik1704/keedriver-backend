@@ -117,3 +117,12 @@ class DriverProfile(models.Model):
 
     def __str__(self):
         return self.driver.get_full_name()
+
+
+class BlockDriver(models.Model):
+    blocker = models.ForeignKey(
+        Customer, related_name="blocked_by", on_delete=models.CASCADE
+    )
+    blocked_user = models.ForeignKey(
+        Driver, related_name="blocked_user", on_delete=models.CASCADE
+    )
