@@ -35,10 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "65.0.184.137",
-    "43.205.194.9",
-    # "api.keedriver.com",
-    # "www.api.keedriver.com",
+    ".devapi.keedriver.com",
     "devapi.keedriver.com",
     "www.devapi.keedriver.com",
 ]
