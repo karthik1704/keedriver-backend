@@ -80,7 +80,7 @@ class TripForm(forms.ModelForm):
             local_trip = TripType.objects.all().first()
             if local_trip:
                 self.fields["trip_parent_type"].initial = local_trip.id
-                child_trip = local_trip.get_children().first()
+                child_trip = local_trip.get_children().last()
                 self.fields["trip_type"].initial = child_trip.id
         self.fields["driver_based_on_loaction"].initial = True
 

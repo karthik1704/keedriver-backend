@@ -237,7 +237,7 @@ class TripTypeAutocomplete(autocomplete.Select2QuerySetView):
         parent = self.forwarded.get("trip_parent_type", None)
 
         if parent:
-            obj = TripType.objects.get(pk=parent).get_children().order_by("name")
+            obj = TripType.objects.get(pk=parent).get_children().order_by("-id")
             print(obj)
             qs = obj
             if self.q:

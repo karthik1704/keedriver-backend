@@ -35,7 +35,6 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    ".devapi.keedriver.com",
     "devapi.keedriver.com",
     "www.devapi.keedriver.com",
 ]
@@ -214,7 +213,7 @@ REST_AUTH = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=2) if DEBUG else timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1) if DEBUG else timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
 }
 
