@@ -1,16 +1,14 @@
-
-from rest_framework import viewsets, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, permissions, viewsets
 
-
-from keedriver.permissions import IsCustomer 
-
+from keedriver.permissions import IsCustomer
 from trips.models import Trip
-from trips.serializers import TripSerializer
+from trips.serializers import CustomerTripSerializer, TripSerializer
+
 
 class CustomerTripViewset(viewsets.ModelViewSet):
     queryset = Trip.objects.none()
-    serializer_class = TripSerializer
+    serializer_class = CustomerTripSerializer
     permission_classes = [permissions.IsAuthenticated, IsCustomer]
     filter_backends = [
         DjangoFilterBackend,

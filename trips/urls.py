@@ -1,19 +1,17 @@
 from django.urls import include, path
-
 from rest_framework import routers
-from .views.admins import (
-    TripViewset,
-    TripTypeListView,
-    TripTypesCreate,
-    TripTypeRDView,
-    TripTypeUpdateView,
-    DashboardView,
-    DashboardCustomerChartView,
-)
 
+from .views.admins import (
+    DashboardCustomerChartView,
+    DashboardView,
+    TripTypeListView,
+    TripTypeRDView,
+    TripTypesCreate,
+    TripTypeUpdateView,
+    TripViewset,
+)
 from .views.customers import CustomerTripViewset
 from .views.drivers import DriverTripViewset
-
 
 router = routers.DefaultRouter()
 # router.register(r'triptypes', TripTypeViewset, basename='trips')
