@@ -64,13 +64,16 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "import_export",
     "rangefilter",
+    "django_prose_editor",
     # apps
     "accounts.apps.AccountsConfig",
+    "cars",
     "trips",
     "areas",
     "wallets",
     "hire_us",
     "reviews",
+    "blogs",
 ]
 
 MIDDLEWARE = [

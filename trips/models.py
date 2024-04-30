@@ -10,6 +10,7 @@ from treebeard.mp_tree import MP_Node
 
 from accounts.models import Customer, Driver, MyUser
 from areas.models import Area
+from cars.models import Car
 
 
 # Create your models here.
@@ -62,6 +63,7 @@ class Trip(models.Model):
         blank=True,
         null=True,
     )
+    car = models.ForeignKey(Car, on_delete=models.DO_NOTHING, blank=True, null=True)
     alternate_phone_number = models.CharField(max_length=39, blank=True, null=True)
     trip_type = models.ForeignKey(TripType, on_delete=models.DO_NOTHING)
     trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
