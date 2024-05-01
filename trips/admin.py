@@ -246,6 +246,10 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
             {"fields": ("driver", "driver_based_on_loaction")},
         ),
         (
+            "Car Details",
+            {"fields": ("car",)},
+        ),
+        (
             "Payment Details / Status",
             {"fields": ("amount", "amount_status", "trip_status")},
         ),

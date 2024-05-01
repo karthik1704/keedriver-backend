@@ -93,6 +93,7 @@ class CustomUserDetailSerializer(serializers.ModelSerializer):
             "is_superuser",
             "is_customer",
             "is_driver",
+            "phone",
         )
         exclude = ("groups", "user_permissions", "password")
 

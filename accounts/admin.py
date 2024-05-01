@@ -10,6 +10,7 @@ from rangefilter.filters import (  # DateTimeRangeFilterBuilder,; NumericRangeFi
     DateRangeFilterBuilder,
 )
 
+from cars.models import Car
 from reviews.models import Review
 
 from .models import (
@@ -70,9 +71,7 @@ class DriverReviews(admin.StackedInline):
 class CustomerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)
-        self.fields[
-            "phone"
-        ].help_text = (
+        self.fields["phone"].help_text = (
             "only enter 10 digits phone number, should not contain '+91' and spaces"
         )
 
@@ -90,9 +89,7 @@ class CustomerForm(forms.ModelForm):
 class DriverForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DriverForm, self).__init__(*args, **kwargs)
-        self.fields[
-            "phone"
-        ].help_text = (
+        self.fields["phone"].help_text = (
             "only enter 10 digits phone number, should not contain '+91' and spaces"
         )
 
@@ -111,9 +108,16 @@ class BlockDriverInline(admin.TabularInline):
     model = BlockDriver
     extra = 0
     fk_name = "blocker"
-    autocomplete_fields = ["blocked_user",]
+    autocomplete_fields = [
+        "blocked_user",
+    ]
 
     classes = ("collapse",)
+
+
+class CarInline(admin.StackedInline):
+    model = Car
+    extra = 0
 
 
 class CustomerAdmin(admin.ModelAdmin):
@@ -128,7 +132,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
     def get_inlines(self, request, obj=None):
         if obj:
-            return [CustomerProfileAdmin, CustomerReviews, BlockDriverInline]
+            return [CustomerProfileAdmin, CustomerReviews, BlockDriverInline, CarInline]
         else:
             return []
 

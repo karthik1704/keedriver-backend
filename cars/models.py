@@ -17,7 +17,6 @@ class CarEngineType(models.Model):
 
 class Car(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    car_name = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
     company_name = models.CharField(max_length=255)
     registration_number = models.CharField(max_length=25)
@@ -31,4 +30,4 @@ class Car(models.Model):
     )
 
     def __str__(self) -> str:
-        return self.car_name
+        return self.model

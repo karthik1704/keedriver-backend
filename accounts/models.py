@@ -86,6 +86,9 @@ class Customer(MyUser):
         self.is_customer = True
         super().save(*args, **kwargs)
 
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name if self.last_name else ""} - {self.phone}"
+
 
 class CustomerProfile(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
