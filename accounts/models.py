@@ -87,7 +87,7 @@ class Customer(MyUser):
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name if self.last_name else ""} - {self.phone}"
+        return f"{self.first_name} {self.last_name if self.last_name else ''} - {self.phone}"
 
 
 class CustomerProfile(models.Model):
