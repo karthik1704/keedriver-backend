@@ -6,7 +6,7 @@ from rest_framework import permissions
 from .models import contact
 from.serializers import *
 
-class ContactsView(CreateAPIView):
+class ContactCreateView(CreateAPIView):
 
     # def post(self,request):
     #     new_contacts=contact(name= request.data ["name"],Email =request.data["Email"],Phone = request.data["Phone"],Message= request.data["Message"] )
@@ -15,7 +15,7 @@ class ContactsView(CreateAPIView):
     #     return Response(new_contacts)
     
     
-    serializer_class=ContantsSerializers
+    serializer_class=ContactSerializers
     permission_classes= {
         permissions.AllowAny
     }
