@@ -1,4 +1,3 @@
-from msilib.schema import ListView
 from typing import Generic
 from django.shortcuts import render
 from rest_framework import permissions, viewsets
