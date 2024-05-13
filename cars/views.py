@@ -1,8 +1,14 @@
+from msilib.schema import ListView
+from typing import Generic
 from django.shortcuts import render
 from rest_framework import permissions, viewsets
+from rest_framework.views import APIView
+from rest_framework import generics
 
 from cars.models import Car
-from cars.serializers import CarSerializer
+from cars.models import CarType
+from cars.models import CarEngineType
+from cars.serializers import CarEngineTypeSerializer, CarSerializer, CarTypeSerializer
 from keedriver.permissions import IsCustomer
 
 
@@ -14,3 +20,16 @@ class CarViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Car.objects.filter(customer=self.request.user)
+    
+class CarTypeGentric(generics.ListAPIView):
+    queryset = CarType.objects.all()
+    serializer_class = CarTypeSerializer
+    permission_classes = [permissions.AllowAny]
+
+class CarEngineTypeGentric(generics.ListAPIView):
+    queryset = CarEngineType.objects.all()
+    serializer_class = CarEngineTypeSerializer
+    permission_classes =[permissions.AllowAny]
+
+
+    
