@@ -3,23 +3,34 @@ from django.shortcuts import render
 from rest_framework import permissions, viewsets
 from rest_framework.views import APIView
 from rest_framework import generics
+from rest_framework.generics import CreateAPIView
 
 from cars.models import Car
 from cars.models import CarType
 from cars.models import CarEngineType
-from cars.serializers import CarEngineTypeSerializer, CarSerializer, CarTypeSerializer
+from cars.serializers import CarCreateSerializer, CarEngineTypeSerializer, CarSerializer, CarTypeSerializer
 from keedriver.permissions import IsCustomer
 
 
 # Create your views here.
-class CarViewSet(viewsets.ModelViewSet):
-    queryset = Car.objects.none()
-    serializer_class = CarSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCustomer]
+# class CarViewSet(viewsets.ModelViewSet):
+#     queryset = Car.objects.none()
+#     serializer_class = CarSerializer
+#     permission_classes = [permissions.IsAuthenticated, IsCustomer]
 
-    def get_queryset(self):
-        return Car.objects.filter(customer=self.request.user)
-    
+#     def get_queryset(self):
+#         return Car.objects.filter(customer=self.request.user)
+
+class CarCreateView(CreateAPIView):
+    queryset = Car.objects.all()
+    serializer_class = CarCreateSerializer
+    permission_classes = { permissions.AllowAny}
+
+class CarGentric(generics.ListAPIView):
+    queryset = Car.objects.all()
+    serializer_class = CarSerializer
+    permission_classes = [permissions.AllowAny]
+
 class CarTypeGentric(generics.ListAPIView):
     queryset = CarType.objects.all()
     serializer_class = CarTypeSerializer

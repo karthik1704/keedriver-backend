@@ -3,6 +3,13 @@ from rest_framework import serializers
 from cars.models import Car, CarEngineType, CarType
 
 
+class CarCreateSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model = Car
+        fields = "__all__"
+
+
 class CarTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarType
