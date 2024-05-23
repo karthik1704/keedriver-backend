@@ -15,7 +15,7 @@ from cars.views import CarEngineTypeGentric
 urlpatterns = [
     # path("", include(router.urls)),
     path ("car/",CarGentric.as_view()),
-    path("car/", CarCreateView.as_view()),
+    path("car/create/", CarCreateView.as_view()),
     path("cartype/", CarTypeGentric.as_view()),
     path ("carenginetype/", CarEngineTypeGentric.as_view()),
     path("car/<int:pk>/",CarReadView.as_view())
