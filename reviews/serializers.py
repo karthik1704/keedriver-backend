@@ -1,5 +1,3 @@
-from typing_extensions import ReadOnly
-from xml.dom.minidom import ReadOnlySequentialNamedNodeMap
 from rest_framework import serializers
 from .models import Review
 from accounts.serializers import MyUserSerializer 

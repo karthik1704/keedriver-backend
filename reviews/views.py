@@ -1,8 +1,8 @@
 from rest_framework import generics
 
 from keedriver import permissions
-from reviews.admin import ReviewAdmin
-from .models import Review, Trip
+
+from .models import Review
 from .serializers import ReviewCreateSerializer, ReviewSerialzer
 
 
