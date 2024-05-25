@@ -1,3 +1,4 @@
+from pyexpat import model
 from rest_framework import serializers
 from .models import Review
 from accounts.serializers import MyUserSerializer 
@@ -17,3 +18,15 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         exclude = ('reviewer',)
+
+
+class ReviewPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields= '__all__'
+
+
+class ReviewDeleteSerialize(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields ='__all__'
