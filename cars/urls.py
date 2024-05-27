@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework import routers
 
 # from cars.views import CarViewSet
-from cars.views import CarCreateView, CarReadView, CreateAPIView
+from cars.views import CarCreateView, CarReadView, CarUpdateSView,CarDeleteView
 from cars.views import CarTypeGentric,CarGentric
 from cars.views import CarEngineTypeGentric
 
@@ -18,6 +18,8 @@ urlpatterns = [
     path("car/create/", CarCreateView.as_view()),
     path("cartype/", CarTypeGentric.as_view()),
     path ("carenginetype/", CarEngineTypeGentric.as_view()),
-    path("car/<int:pk>/",CarReadView.as_view())
+    path("car/<int:pk>/",CarReadView.as_view()),
+    path ("car/<int:pk>/update/",CarUpdateSView.as_view()),
+    path ("car/<int:pk>/delete/",CarDeleteView.as_view()),
     
 ]

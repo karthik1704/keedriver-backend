@@ -1,16 +1,18 @@
 from typing import Generic
 from django.shortcuts import render
-from rest_framework import permissions, viewsets
+from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.generics import CreateAPIView
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import DestroyAPIView
 
 
 from cars.models import Car
 from cars.models import CarType
 from cars.models import CarEngineType
-from cars.serializers import CarCreateSerializer, CarEngineTypeSerializer, CarSerializer, CarTypeSerializer,CarReadSerializer
+from cars.serializers import CarCreateSerializer, CarDeleteSerializer, CarEngineTypeSerializer, CarSerializer, CarTypeSerializer,CarReadSerializer,CarUpdateSerializer
 from keedriver.permissions import IsCustomer
 from trips.views import customers
 
@@ -33,10 +35,27 @@ class CarCreateView(CreateAPIView):
         serializer.save(customer=self.request.user)
 
 
+class CarUpdateSView(UpdateAPIView):
+    queryset = Car.objects.all()
+    serializer_class = CarUpdateSerializer
+    permission_classes = {permissions.IsAuthenticated}
+
+
+
+class CarDeleteView(DestroyAPIView):
+    queryset = Car.objects.all()
+    serializer_class = CarDeleteSerializer
+    permission_classes = {permissions.AllowAny}
+
+
+
+
+
 class CarReadView(RetrieveAPIView):
     queryset = Car.objects.all()
     serializer_class = CarReadSerializer
     permission_classes = {permissions.AllowAny}
+
 
 class CarGentric(generics.ListAPIView):
     queryset = Car.objects.all()

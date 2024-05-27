@@ -22,6 +22,16 @@ class CarReadSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class CarDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Car
+        fields = '__all__'
+
+class CarUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Car
+        fields = '__all__'
+
 class CarTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarType
