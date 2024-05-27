@@ -24,7 +24,7 @@ class ReviewByTripId(generics.ListAPIView):
 class ReviewCreateTripId(generics.CreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewCreateSerializer
-    permission_classes = {permissions.IsAuthenticated}
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(reviewer=self.request.user)
@@ -32,11 +32,11 @@ class ReviewCreateTripId(generics.CreateAPIView):
 class ReviewPutTrip(generics.UpdateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewPutSerializer
-    permission_classes ={permissions.IsAuthenticated}
+    permission_classes =[permissions.IsAuthenticated]
 
 class ReviewDeleteTrip(generics.DestroyAPIView):
     queryset= Review.objects.all()
     serializer_class = ReviewDeleteSerializer
-    permission_classes ={permissions.IsAuthenticated}
+    permission_classes =[permissions.IsAuthenticated]
 
    

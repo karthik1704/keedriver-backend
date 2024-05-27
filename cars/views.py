@@ -45,7 +45,7 @@ class CarUpdateSView(UpdateAPIView):
 class CarDeleteView(DestroyAPIView):
     queryset = Car.objects.all()
     serializer_class = CarDeleteSerializer
-    permission_classes = {permissions.AllowAny}
+    permission_classes = [permissions.IsAuthenticated]
 
 
 
@@ -54,7 +54,7 @@ class CarDeleteView(DestroyAPIView):
 class CarReadView(RetrieveAPIView):
     queryset = Car.objects.all()
     serializer_class = CarReadSerializer
-    permission_classes = {permissions.AllowAny}
+    permission_classes = [permissions.AllowAny]
 
 
 class CarGentric(generics.ListAPIView):
