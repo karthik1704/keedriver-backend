@@ -11,7 +11,7 @@ from .serializers import ReviewCreateSerializer, ReviewSerialzer,ReviewPutSerial
 class ReviewByTripId(generics.ListAPIView):
     
     serializer_class=ReviewSerialzer
-    permission_classes = {permissions.IsAuthenticated}
+    permission_classes = [permissions.IsAuthenticated]
     
 
     def get_queryset(self):
