@@ -5,7 +5,7 @@ from rest_framework import permissions
 from trips.models import Trip
 
 from .models import Review
-from .serializers import ReviewCreateSerializer, ReviewSerialzer,ReviewPutSerializer,ReviewDeleteSerializer
+from .serializers import ReviewCreateSerializer, ReviewReadSerializer, ReviewSerialzer,ReviewPutSerializer,ReviewDeleteSerializer
 
 
 class ReviewByTripId(generics.ListAPIView):
@@ -18,7 +18,10 @@ class ReviewByTripId(generics.ListAPIView):
         trip_id = self.kwargs['trip_id']
         return Review.objects.filter(reviewer=self.request.user, trip=trip_id)
         
-
+class ReviewReadTripId(generics.RetrieveAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewReadSerializer
+    permission_classes = [permissions.IsAuthenticated]
         
 
 class ReviewCreateTripId(generics.CreateAPIView):

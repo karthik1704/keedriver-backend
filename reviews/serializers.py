@@ -13,6 +13,11 @@ class ReviewSerialzer(serializers.ModelSerializer):
         model = Review
         fields = '__all__'
 
+class ReviewReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model =Review
+        fields = '__all__'
+
 
 class ReviewCreateSerializer(serializers.ModelSerializer):
     class Meta:
