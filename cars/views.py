@@ -53,7 +53,7 @@ class CarDeleteView(DestroyAPIView):
 
 class CarReadView(RetrieveAPIView):
     queryset = Car.objects.all()
-    serializer_class = CarReadSerializer
+    serializer_class = CarSerializer
     permission_classes = [permissions.AllowAny]
 
 

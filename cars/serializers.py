@@ -30,7 +30,8 @@ class CarDeleteSerializer(serializers.ModelSerializer):
 class CarUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
-        fields = '__all__'
+        exclude =('customer',)
+
 
 class CarTypeSerializer(serializers.ModelSerializer):
     class Meta:
