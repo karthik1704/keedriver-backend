@@ -38,7 +38,7 @@ class CarCreateView(CreateAPIView):
 class CarUpdateSView(UpdateAPIView):
     queryset = Car.objects.all()
     serializer_class = CarUpdateSerializer
-    permission_classes = {permissions.IsAuthenticated}
+    permission_classes = [permissions.IsAuthenticated]
 
 
 

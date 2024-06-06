@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "reviews",
     "blogs",
     "contacts",
+    "FAQ",
 
 ]
 
