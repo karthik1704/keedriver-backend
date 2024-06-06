@@ -29,7 +29,7 @@ from trips.views import customers
 class CarCreateView(CreateAPIView):
     queryset = Car.objects.all()
     serializer_class = CarCreateSerializer
-    permission_classes = { permissions.IsAuthenticated,IsCustomer}
+    permission_classes = [ permissions.IsAuthenticated,IsCustomer]
 
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
