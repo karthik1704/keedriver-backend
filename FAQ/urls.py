@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import FAQCreateView, FAQDetail
+from .views import FAQCreateView
 
 urlpatterns = [
     path('faq/',FAQCreateView.as_view()),
-    path('faqs/<int:pk>/', FAQDetail.as_view()),
+    
 ]
