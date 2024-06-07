@@ -15,3 +15,4 @@ class FAQCreateView(ListCreateAPIView):
 class FAQDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = FAQ.objects.all()
     serializer_class = FAQSerializer
+    permission_classes = [permissions.IsAuthenticated]
