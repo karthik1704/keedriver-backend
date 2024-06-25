@@ -35,6 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "3.110.169.239",
     "devapi.keedriver.com",
     "www.devapi.keedriver.com",
 ]
@@ -75,7 +76,6 @@ INSTALLED_APPS = [
     "reviews",
     "blogs",
     "contacts",
-
 ]
 
 MIDDLEWARE = [
