@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "import_export",
     "rangefilter",
     "django_prose_editor",
+    "django_flatpickr",
     # apps
     "accounts.apps.AccountsConfig",
     "cars",

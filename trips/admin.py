@@ -10,6 +10,7 @@ from django.forms import BaseInlineFormSet, ModelChoiceField
 from django.http import HttpResponseRedirect
 from django.http.request import HttpRequest
 from django.utils import timezone
+from django_flatpickr.widgets import DatePickerInput, DateTimePickerInput
 from import_export import resources
 from import_export.admin import ExportActionMixin, ExportMixin, ImportExportModelAdmin
 from import_export.fields import Field
@@ -66,6 +67,7 @@ class TripForm(forms.ModelForm):
                     "trip_parent_type",
                 ],
             ),
+            "pickup_time": DateTimePickerInput(),
         }
 
     def __init__(self, *args, **kwargs):
