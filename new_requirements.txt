@@ -1,3 +1,4 @@
+annotated-types==0.7.0
 asgiref==3.8.1
 attrs==23.2.0
 defusedxml==0.7.1
@@ -9,6 +10,7 @@ django-autocomplete-light==3.11.0
 django-cors-headers==4.4.0
 django-environ==0.11.2
 django-filter==24.2
+django-flatpickr==2.0.3
 django-import-export==4.1.0
 django-location-field==2.7.0
 django-map-widgets==0.4.1
@@ -30,7 +32,11 @@ packaging==24.1
 pillow==10.3.0
 psycopg==3.1.19
 psycopg-binary==3.1.19
+pydantic==2.7.4
+pydantic-settings==2.3.4
+pydantic_core==2.18.4
 PyJWT==2.8.0
+python-dotenv==1.0.1
 pytz==2024.1
 PyYAML==6.0.1
 referencing==0.35.1
