@@ -51,12 +51,17 @@ urlpatterns = [
     path("api/v1/", include("hire_us.urls")),
     path("api/v1/", include("cars.urls")),
     path("api/v1/", include("blogs.urls")),
-    path("api/v1/",include("contacts.urls")),
-    path("api/v1/",include("reviews.urls")),
+    path("api/v1/", include("contacts.urls")),
+    path("api/v1/", include("reviews.urls")),
     # YOUR PATTERNS
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/redoc/", SpectacularRedocView.as_view(), name="redoc schema"),
     # Optional UI:
-    path("", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path(
+        "",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
 ]
 
 
