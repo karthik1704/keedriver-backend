@@ -61,7 +61,7 @@ class CarGentric(generics.ListAPIView):
 
 
 class CarTypeGentric(generics.ListAPIView):
-    queryset = CarType.objects.none()
+    queryset = CarType.objects.all()
     serializer_class = CarTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
