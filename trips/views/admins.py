@@ -13,6 +13,7 @@ from django.utils.timezone import datetime, localdate, make_aware, timedelta
 from django_filters import rest_framework as drfilters
 from django_filters import widgets
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import (
@@ -40,6 +41,9 @@ from trips.serializers import (
 # Create your views here.
 
 
+@extend_schema(
+    tags=["Admin Trips"],  # Add your custom tag here
+)
 class TripTypeListView(
     GenericAPIView,
     ListModelMixin,
@@ -59,6 +63,9 @@ class TripTypeListView(
         return self.list(request, *args, **kwargs)
 
 
+@extend_schema(
+    tags=["Admin Trips"],  # Add your custom tag here
+)
 class TripTypeRDView(
     GenericAPIView,
     RetrieveModelMixin,
@@ -91,6 +98,9 @@ class TripTypeRDView(
         return self.destroy(request, *args, **kwargs)
 
 
+@extend_schema(
+    tags=["Admin Trips"],  # Add your custom tag here
+)
 class TripTypeUpdateView(
     GenericAPIView,
     UpdateModelMixin,
@@ -128,6 +138,9 @@ class TripTypeUpdateView(
         return self.partial_update(request, *args, **kwargs)
 
 
+@extend_schema(
+    tags=["Admin Trips"],  # Add your custom tag here
+)
 class TripTypesCreate(GenericAPIView, CreateModelMixin):
     queryset = TripType.objects.all()
     serializer_class = TripTypeCreateSerializer
@@ -152,6 +165,9 @@ class TripFilter(drfilters.FilterSet):
     }
 
 
+@extend_schema(
+    tags=["Admin Trips"],  # Add your custom tag here
+)
 class TripViewset(viewsets.ModelViewSet):
     queryset = Trip.objects.all().order_by("trip_status")
     serializer_class = TripSerializer
@@ -174,6 +190,9 @@ class TripViewset(viewsets.ModelViewSet):
     search_fields = ["trip_id", "customer__phone", "driver__phone"]
 
 
+@extend_schema(
+    tags=["Admin Trips"],  # Add your custom tag here
+)
 class DriverAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
@@ -227,6 +246,9 @@ class DriverAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
+@extend_schema(
+    tags=["Admin Trips"],  # Add your custom tag here
+)
 class TripTypeAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
@@ -246,6 +268,9 @@ class TripTypeAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
+@extend_schema(
+    tags=["Admin Trips"],  # Add your custom tag here
+)
 class DashboardView(APIView):
     serializer_class = TripDashboardSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
@@ -352,6 +377,9 @@ class DashboardView(APIView):
         )
 
 
+@extend_schema(
+    tags=["Customer Trips"],  # Add your custom tag here
+)
 class DashboardCustomerChartView(APIView):
     def get(self, request, format=None):
         users = Customer.objects.all()

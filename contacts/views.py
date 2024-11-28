@@ -1,21 +1,14 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView
+from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
+from rest_framework.generics import CreateAPIView
 
-from .models import contact
-from.serializers import *
+from .serializers import ContactSerializers
 
+
+@extend_schema(
+    tags=["Contacts"],  # Add your custom tag here
+)
 class ContactCreateView(CreateAPIView):
 
-    # def post(self,request):
-    #     new_contacts=contact(name= request.data ["name"],Email =request.data["Email"],Phone = request.data["Phone"],Message= request.data["Message"] )
-
-    #     new_contacts.save()
-    #     return Response(new_contacts)
-    
-    
-    serializer_class=ContactSerializers
-    permission_classes= {
-        permissions.AllowAny
-    }
+    serializer_class = ContactSerializers
+    permission_classes = {permissions.AllowAny}

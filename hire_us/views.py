@@ -1,10 +1,5 @@
-from django.shortcuts import render
-from rest_framework.generics import (
-    CreateAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
-)
+from drf_spectacular.utils import extend_schema
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from hire_us.models import HireUs
@@ -13,6 +8,9 @@ from hire_us.serializers import HireUsReportSerializer, HireUsSerializer
 # Create your views here.
 
 
+@extend_schema(
+    tags=["Hire Us"],
+)
 class HireUsViewSet(ModelViewSet):
     serializer_class = HireUsSerializer
     model = serializer_class.Meta.model
@@ -21,6 +19,9 @@ class HireUsViewSet(ModelViewSet):
         return self.model.objects.all()
 
 
+@extend_schema(
+    tags=["Hire Us"],
+)
 class HireReportCreateView(CreateAPIView):
     serializer_class = HireUsReportSerializer
     model = serializer_class.Meta.model
@@ -52,6 +53,9 @@ class HireReportCreateView(CreateAPIView):
         return super().perform_create(serializer)
 
 
+@extend_schema(
+    tags=["Hire Us"],
+)
 class HireReportRetrieveView(RetrieveAPIView):
     serializer_class = HireUsReportSerializer
     model = serializer_class.Meta.model

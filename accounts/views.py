@@ -1,8 +1,8 @@
 import calendar
 import datetime
 
-from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import GenericAPIView
@@ -19,9 +19,11 @@ from .serializers import (
     SendOTPRequestSerializer,
 )
 
+
 # Create your views here.
-
-
+@extend_schema(
+    tags=["Admin - User"],  # Add your custom tag here
+)
 class MyUserViewset(viewsets.ModelViewSet):
 
     queryset = MyUser.objects.all().order_by("-date_joined")
@@ -39,6 +41,9 @@ class MyUserViewset(viewsets.ModelViewSet):
     search_fields = ["first_name", "last_name", "phone", "username"]
 
 
+@extend_schema(
+    tags=["User"],  # Add your custom tag here
+)
 class MyUserPasswordChange(GenericAPIView):
     queryset = MyUser.objects.all()
     serializer_class = CustomPasswordChangeSerializer
@@ -54,6 +59,9 @@ class MyUserPasswordChange(GenericAPIView):
         return Response({"detail": "New password has been saved."})
 
 
+@extend_schema(
+    tags=["Customer"],  # Add your custom tag here
+)
 class CustomerViewset(viewsets.ModelViewSet):
 
     queryset = Customer.objects.all().order_by("-date_joined")
@@ -105,6 +113,9 @@ class CustomerViewset(viewsets.ModelViewSet):
         return Response(data, status=status.HTTP_200_OK)
 
 
+@extend_schema(
+    tags=["Driver"],  # Add your custom tag here
+)
 class DriverViewset(viewsets.ModelViewSet):
 
     queryset = Driver.objects.all().order_by("-date_joined")
@@ -145,6 +156,9 @@ class DriverViewset(viewsets.ModelViewSet):
         return Response(data, status=status.HTTP_200_OK)
 
 
+@extend_schema(
+    tags=["Auth"],  # Add your custom tag here
+)
 class SendOTP(GenericAPIView):
     serializer_class = SendOTPRequestSerializer
     permission_classes = (permissions.AllowAny,)
@@ -162,6 +176,9 @@ class SendOTP(GenericAPIView):
         return Response({"detail": "OTP has been sent.", "otp": otp}, status=200)
 
 
+@extend_schema(
+    tags=["Auth"],  # Add your custom tag here
+)
 class CreateAccount(GenericAPIView):
     serializer_class = MyUserSerializer
     permission_classes = (permissions.IsAuthenticated,)

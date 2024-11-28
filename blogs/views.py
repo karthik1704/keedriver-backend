@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny
 
@@ -8,12 +8,18 @@ from blogs.serializers import BlogListSerializer, BlogPinsSerializer, BlogSerial
 # Create your views here.
 
 
+@extend_schema(
+    tags=["Blog"],  # Add your custom tag here
+)
 class BlogList(ListAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogListSerializer
     permission_classes = [AllowAny]
 
 
+@extend_schema(
+    tags=["Blog"],  # Add your custom tag here
+)
 class BlogDetail(RetrieveAPIView):
     queryset = Blog.objects.none
     serializer_class = BlogSerializer
@@ -24,6 +30,9 @@ class BlogDetail(RetrieveAPIView):
         return Blog.objects.all()
 
 
+@extend_schema(
+    tags=["Blog"],  # Add your custom tag here
+)
 class BlogPinsList(ListAPIView):
     queryset = Blog.objects.filter(pin=True)
     serializer_class = BlogPinsSerializer

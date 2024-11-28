@@ -1,15 +1,15 @@
-
-
-
-from rest_framework import viewsets, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
+from rest_framework import filters, permissions, viewsets
 
-
-from keedriver.permissions import IsDriver 
-
+from keedriver.permissions import IsDriver
 from trips.models import Trip
 from trips.serializers import TripSerializer
 
+
+@extend_schema(
+    tags=["Driver Trips"],  # Add your custom tag here
+)
 class DriverTripViewset(viewsets.ModelViewSet):
     queryset = Trip.objects.none()
     serializer_class = TripSerializer

@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics, permissions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 
@@ -6,7 +7,11 @@ from cars.serializers import CarEngineTypeSerializer, CarSerializer, CarTypeSeri
 from keedriver.permissions import IsCustomer
 
 
+@extend_schema(
+    tags=["Cars"],  # Add your custom tag here
+)
 class CarCreateListView(ListCreateAPIView):
+
     queryset = Car.objects.all()
     serializer_class = CarSerializer
     permission_classes = [permissions.IsAuthenticated, IsCustomer]
@@ -27,38 +32,27 @@ class CarCreateListView(ListCreateAPIView):
         return super().get_queryset().filter(customer=self.request.user)
 
 
+@extend_schema(
+    tags=["Cars"],  # Add your custom tag here
+)
 class CarUpdateRetriveView(RetrieveUpdateAPIView):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
     permission_classes = {permissions.IsAuthenticated, IsCustomer}
 
 
-# class CarReadView(RetrieveAPIView):
-#     queryset = Car.objects.none()
-#     serializer_class = CarReadSerializer
-#     permission_classes = {
-#         permissions.AllowAny,
-#     }
-
-#     def get_queryset(self):
-#         return Car.objects.filter(customer=self.request.user)
-
-
-class CarGentric(generics.ListAPIView):
-    queryset = Car.objects.none()
-    serializer_class = CarSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCustomer]
-
-    def get_queryset(self):
-        return Car.objects.filter(customer=self.request.user)
-
-
+@extend_schema(
+    tags=["Cars"],  # Add your custom tag here
+)
 class CarTypeGentric(generics.ListAPIView):
     queryset = CarType.objects.all()
     serializer_class = CarTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
+@extend_schema(
+    tags=["Cars"],  # Add your custom tag here
+)
 class CarEngineTypeGentric(generics.ListAPIView):
     queryset = CarEngineType.objects.all()
     serializer_class = CarEngineTypeSerializer
