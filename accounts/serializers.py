@@ -1,6 +1,10 @@
+import email
+
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, serializers
+
+from accounts.utils import verify_totp
 
 from .models import Customer, Driver, MyUser
 
@@ -9,7 +13,11 @@ class CustomLoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=False, allow_blank=True)
     # email = serializers.EmailField(required=False, allow_blank=True)
     phone = serializers.CharField(required=False, allow_blank=True)
+    role = serializers.CharField(required=False, default="customer")
     password = serializers.CharField(
+        style={"input_type": "password"}, required=False, allow_blank=True
+    )
+    otp = serializers.CharField(
         style={"input_type": "password"}, required=False, allow_blank=True
     )
 
@@ -32,13 +40,17 @@ class CustomLoginSerializer(serializers.Serializer):
 
     #     return user
 
-    def _validate_phone(self, phone, password):
+    def _validate_phone(self, phone, otp, role):
         user = None
-
         if phone:
-            user = self.authenticate(phone=phone)
+            verified_otp = verify_totp(phone, otp)
+            if not verified_otp:
+                msg = _("Entered OTP is incorrect / Expired.")
+                raise exceptions.ValidationError(msg)
+
+            user = self.authenticate(phone=phone, role=role)
         else:
-            msg = _('Must include "phone" and "password".')
+            msg = _('Must include "phone" and "otp".')
             raise exceptions.ValidationError(msg)
 
         return user
@@ -59,11 +71,13 @@ class CustomLoginSerializer(serializers.Serializer):
         email = attrs.get("email")
         phone = attrs.get("phone")
         password = attrs.get("password")
+        otp = attrs.get("otp")
+        role = attrs.get("role")
 
         # if email:
         #     user = self._validate_email(email, password)
         if phone:
-            user = self._validate_phone(phone, password)
+            user = self._validate_phone(phone, otp, role)
         elif username:
             user = self._validate_username(username, password)
         else:
@@ -71,9 +85,10 @@ class CustomLoginSerializer(serializers.Serializer):
             raise exceptions.ValidationError(msg)
 
         if user:
-            if not user.is_active:
-                msg = _("User account is disabled.")
-                raise exceptions.ValidationError(msg)
+            # if not user.is_active:
+            #     msg = _("User account is disabled.")
+            #     raise exceptions.ValidationError(msg)
+            pass
         else:
             msg = _("Unable to log in with provided credentials.")
             raise exceptions.ValidationError(msg)
@@ -167,3 +182,13 @@ class DriverSerializer(serializers.ModelSerializer):
             "last_login",
         )
         read_only_fields = ("is_driver", "date_joined", "last_login")
+
+
+class SendOTPRequestSerializer(serializers.Serializer):
+    phone = serializers.CharField()
+
+
+class CreateAccountSerializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    email = serializers.EmailField()
