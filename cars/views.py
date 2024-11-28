@@ -1,54 +1,47 @@
-from typing import Generic
-
-from django.shortcuts import render
-from rest_framework import generics, permissions, viewsets
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView
-from rest_framework.views import APIView
+from rest_framework import generics, permissions
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 
 from cars.models import Car, CarEngineType, CarType
-from cars.serializers import (
-    CarCreateSerializer,
-    CarEngineTypeSerializer,
-    CarReadSerializer,
-    CarSerializer,
-    CarTypeSerializer,
-)
+from cars.serializers import CarEngineTypeSerializer, CarSerializer, CarTypeSerializer
 from keedriver.permissions import IsCustomer
-from trips.views import customers
-
-# Create your views here.
-# class CarViewSet(viewsets.ModelViewSet):
-#     queryset = Car.objects.none()
-#     serializer_class = CarSerializer
-#     permission_classes = [permissions.IsAuthenticated, IsCustomer]
-#     def get_queryset(self):
-#         return Car.objects.filter(customer=self.request.user)
 
 
-class CarCreateView(CreateAPIView):
+class CarCreateListView(ListCreateAPIView):
     queryset = Car.objects.all()
-    serializer_class = CarCreateSerializer
-    permission_classes = {permissions.IsAuthenticated, IsCustomer}
+    serializer_class = CarSerializer
+    permission_classes = [permissions.IsAuthenticated, IsCustomer]
 
+    # Handle GET request (list)
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    # Handle POST request (create)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    # Customize creation behavior
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
 
+    def get_queryset(self):
+        return super().get_queryset().filter(customer=self.request.user)
 
-class CarUpdateView(UpdateAPIView):
+
+class CarUpdateRetriveView(RetrieveUpdateAPIView):
     queryset = Car.objects.all()
-    serializer_class = CarCreateSerializer
+    serializer_class = CarSerializer
     permission_classes = {permissions.IsAuthenticated, IsCustomer}
 
 
-class CarReadView(RetrieveAPIView):
-    queryset = Car.objects.none()
-    serializer_class = CarReadSerializer
-    permission_classes = {
-        permissions.AllowAny,
-    }
+# class CarReadView(RetrieveAPIView):
+#     queryset = Car.objects.none()
+#     serializer_class = CarReadSerializer
+#     permission_classes = {
+#         permissions.AllowAny,
+#     }
 
-    def get_queryset(self):
-        return Car.objects.filter(customer=self.request.user)
+#     def get_queryset(self):
+#         return Car.objects.filter(customer=self.request.user)
 
 
 class CarGentric(generics.ListAPIView):

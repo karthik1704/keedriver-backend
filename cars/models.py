@@ -19,14 +19,23 @@ class Car(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     model = models.CharField(max_length=255)
     company_name = models.CharField(max_length=255)
+    maker = models.CharField(max_length=255, null=True)
     registration_number = models.CharField(max_length=25)
     transmission_type = models.CharField(
-        choices=transmission_types, default="AUTO", max_length=15
+        choices=transmission_types,
+        default="AUTO",
+        max_length=15,
     )
-    type = models.ForeignKey(CarType, on_delete=models.DO_NOTHING, null=True)
+    type = models.ForeignKey(
+        CarType, on_delete=models.DO_NOTHING, null=True, related_name="car_type"
+    )
+    gas_type = models.CharField(max_length=25, null=True)
 
     engine_model = models.ForeignKey(
-        CarEngineType, on_delete=models.DO_NOTHING, null=True
+        CarEngineType,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        related_name="car_engine_model",
     )
 
     def __str__(self) -> str:

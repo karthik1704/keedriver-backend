@@ -1,25 +1,6 @@
-from urllib import request
 from rest_framework import serializers
 
-# from asyncore import read
 from cars.models import Car, CarEngineType, CarType
-
-
-class CarCreateSerializer(serializers.ModelSerializer):
-    
-    
-    class Meta:
-        model = Car
-        exclude =('customer',)
-
-    
-
-
-
-class CarReadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Car
-        fields = "__all__"
 
 
 class CarTypeSerializer(serializers.ModelSerializer):
@@ -35,10 +16,10 @@ class CarEngineTypeSerializer(serializers.ModelSerializer):
 
 
 class CarSerializer(serializers.ModelSerializer):
-   
-    type = CarTypeSerializer(read_only=True)
-    engine_model = CarEngineTypeSerializer(read_only=True)
+    car_type = CarTypeSerializer(read_only=True)
+    car_engine_model = CarEngineTypeSerializer(read_only=True)
 
     class Meta:
         model = Car
         fields = "__all__"
+        read_only_fields = ["customer"]
