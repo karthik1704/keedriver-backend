@@ -63,13 +63,24 @@ class Trip(models.Model):
         blank=True,
         null=True,
     )
-    car = models.ForeignKey(Car, on_delete=models.DO_NOTHING, blank=True, null=True)
+    car = models.ForeignKey(
+        Car,
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        related_name="trip_car",
+    )
     alternate_phone_number = models.CharField(max_length=39, blank=True, null=True)
     trip_type = models.ForeignKey(TripType, on_delete=models.DO_NOTHING)
     trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
 
     pickup_area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
     pickup_location = models.CharField(max_length=255, blank=True, null=True)
+
+    from_lat = models.FloatField(blank=True, null=True)
+    to_lat = models.FloatField(blank=True, null=True)
+    from_lng = models.FloatField(blank=True, null=True)
+    to_lng = models.FloatField(blank=True, null=True)
 
     pickup_time = models.DateTimeField(blank=True, null=True)
     drop_location = models.CharField(max_length=255, blank=True, null=True)
