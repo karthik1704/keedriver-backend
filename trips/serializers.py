@@ -2,6 +2,8 @@ from typing import Union
 
 from rest_framework import serializers
 
+from cars.serializers import CarSerializer
+
 from .models import Trip, TripType
 
 
@@ -113,6 +115,7 @@ class TripSerializer(serializers.ModelSerializer):
 class CustomerTripSerializer(serializers.ModelSerializer):
     driver_name = serializers.SerializerMethodField(read_only=True)
     customer_name = serializers.SerializerMethodField(read_only=True)
+    trip_car = CarSerializer(read_only=True)
 
     class Meta:
         model = Trip
@@ -123,6 +126,8 @@ class CustomerTripSerializer(serializers.ModelSerializer):
             "amount_status",
             "driver",
             "customer",
+            "drop_time",
+            "pickup_area",
         )
 
     def get_driver_name(self, obj) -> Union[str, None]:

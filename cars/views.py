@@ -12,9 +12,10 @@ from keedriver.permissions import IsCustomer
 )
 class CarCreateListView(ListCreateAPIView):
 
-    queryset = Car.objects.all()
+    queryset = Car.objects.none()
     serializer_class = CarSerializer
     permission_classes = [permissions.IsAuthenticated, IsCustomer]
+    pagination_class = None
 
     # Handle GET request (list)
     def get(self, request, *args, **kwargs):
@@ -29,7 +30,7 @@ class CarCreateListView(ListCreateAPIView):
         serializer.save(customer=self.request.user)
 
     def get_queryset(self):
-        return super().get_queryset().filter(customer=self.request.user)
+        return Car.objects.filter(customer=self.request.user).order_by("-id")
 
 
 @extend_schema(

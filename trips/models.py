@@ -74,7 +74,9 @@ class Trip(models.Model):
     trip_type = models.ForeignKey(TripType, on_delete=models.DO_NOTHING)
     trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
 
-    pickup_area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
+    pickup_area = models.ForeignKey(
+        Area, on_delete=models.DO_NOTHING, blank=True, null=True
+    )
     pickup_location = models.CharField(max_length=255, blank=True, null=True)
 
     from_lat = models.FloatField(blank=True, null=True)

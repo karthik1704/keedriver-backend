@@ -116,7 +116,7 @@ class DriverProfile(models.Model):
     license_number = models.CharField(max_length=50)
     license_expiry_date = models.DateField()
     aadhaar_number = models.CharField(max_length=20, null=True, blank=True)
-    is_avaliable = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=False)
 
     def __str__(self):
         return self.driver.get_full_name()

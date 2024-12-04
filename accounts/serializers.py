@@ -1,12 +1,15 @@
 import email
+from os import read
 
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, serializers
 
 from accounts.utils import verify_totp
+from areas.models import Area
+from areas.serializers import AreaSerializer
 
-from .models import Customer, Driver, MyUser
+from .models import Customer, Driver, DriverProfile, MyUser
 
 
 class CustomLoginSerializer(serializers.Serializer):
@@ -192,3 +195,23 @@ class CreateAccountSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     email = serializers.EmailField()
+
+
+class DriverAvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DriverProfile
+        fields = ["is_available"]  # Only allow updating 'is_available'
+        extra_kwargs = {
+            "is_available": {
+                "required": True
+            }  # Ensure this field is required in the payload
+        }
+
+
+class DriverProfileSerializer(serializers.ModelSerializer):
+    area = AreaSerializer(read_only=True)
+
+    class Meta:
+        model = DriverProfile
+        fields = "__all__"
+        read_only_fields = ("driver", "area")

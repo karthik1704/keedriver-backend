@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.response import Response
 
 from keedriver.permissions import IsCustomer
 from trips.models import Trip
@@ -28,3 +29,9 @@ class CustomerTripViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Trip.objects.filter(customer=self.request.user)
         return queryset
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(
+            {"detail": "DELETE operation is not allowed."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )

@@ -5,15 +5,20 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from yaml import serialize
 
 from accounts.utils import generate_totp, send_otp
+from keedriver.permissions import IsDriver
 
-from .models import Customer, Driver, MyUser
+from .models import Customer, Driver, DriverProfile, MyUser
 from .serializers import (
     CustomerSerializer,
     CustomPasswordChangeSerializer,
+    DriverAvailabilitySerializer,
+    DriverProfileSerializer,
     DriverSerializer,
     MyUserSerializer,
     SendOTPRequestSerializer,
@@ -42,7 +47,7 @@ class MyUserViewset(viewsets.ModelViewSet):
 
 
 @extend_schema(
-    tags=["User"],  # Add your custom tag here
+    tags=["Admin - User"],  # Add your custom tag here
 )
 class MyUserPasswordChange(GenericAPIView):
     queryset = MyUser.objects.all()
@@ -60,7 +65,7 @@ class MyUserPasswordChange(GenericAPIView):
 
 
 @extend_schema(
-    tags=["Customer"],  # Add your custom tag here
+    tags=["Admin - Customer"],  # Add your custom tag here
 )
 class CustomerViewset(viewsets.ModelViewSet):
 
@@ -114,7 +119,7 @@ class CustomerViewset(viewsets.ModelViewSet):
 
 
 @extend_schema(
-    tags=["Driver"],  # Add your custom tag here
+    tags=["Admin-Driver"],  # Add your custom tag here
 )
 class DriverViewset(viewsets.ModelViewSet):
 
@@ -154,6 +159,65 @@ class DriverViewset(viewsets.ModelViewSet):
                 }
             )
         return Response(data, status=status.HTTP_200_OK)
+
+
+@extend_schema(
+    tags=["Driver"],  # Add your custom tag here
+)
+class DriverRetriveUpdateView(RetrieveUpdateAPIView):
+    queryset = DriverProfile.objects.none()
+    serializer_class = DriverProfileSerializer
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsDriver,
+    ]
+
+    def get_object(self):
+        try:
+            # Fetch the driver profile associated with the logged-in user
+            driver = DriverProfile.objects.get(driver=self.request.user)
+        except DriverProfile.DoesNotExist:
+            return Response(
+                {"error": "Driver profile not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        return driver
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Driver"],  # Add your custom tag here
+)
+class UpdateDriverAvailabilityView(APIView):
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsDriver,
+    ]
+    serializer_class = DriverAvailabilitySerializer
+
+    def patch(self, request):
+        try:
+            # Fetch the driver profile associated with the logged-in user
+            driver = DriverProfile.objects.get(driver=request.user)
+        except DriverProfile.DoesNotExist:
+            return Response(
+                {"error": "Driver profile not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Deserialize and validate the incoming data
+        serializer = DriverAvailabilitySerializer(
+            driver, data=request.data, partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()  # Update the 'is_available' field
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(
