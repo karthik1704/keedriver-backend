@@ -22,7 +22,7 @@ router.register(r"admin/users", MyUserViewset)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path("user/changepassword/", MyUserPasswordChange.as_view()),
-    path("sendotp/", SendOTP.as_view()),
+    path("getotp/", SendOTP.as_view()),
     path("update-account/", CreateAccount.as_view()),
     path(
         "driver/",
