@@ -209,7 +209,7 @@ class DriverAvailabilitySerializer(serializers.ModelSerializer):
 
 
 class DriverProfileSerializer(serializers.ModelSerializer):
-    area = AreaSerializer(read_only=True)
+    area = AreaSerializer(many=True, read_only=True)
 
     class Meta:
         model = DriverProfile
