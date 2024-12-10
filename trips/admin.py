@@ -67,7 +67,7 @@ class TripForm(forms.ModelForm):
                     "trip_parent_type",
                 ],
             ),
-            "pickup_time": DateTimePickerInput(),
+            # "pickup_time": DateTimePickerInput(),
         }
 
     def __init__(self, *args, **kwargs):
