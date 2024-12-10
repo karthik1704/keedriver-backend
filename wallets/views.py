@@ -95,7 +95,8 @@ class DriverWalletTransactionListAPIView(ListAPIView):
         ordering = "-created_at"
 
     def get_queryset(self):
-        queryset = DriverWalletTransaction.objects.filter(driver=self.request.user)
+        wallet = DriverWallet.objects.get(driver=self.request.user)
+        queryset = DriverWalletTransaction.objects.filter(wallet=wallet)
         return queryset
 
 
