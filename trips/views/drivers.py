@@ -29,7 +29,7 @@ class DriverTripViewset(viewsets.ModelViewSet):
     search_fields = ["trip_id", "customer__phone", "driver__phone"]
 
     def get_queryset(self):
-        queryset = Trip.objects.filter(driver=self.request.user)
+        queryset = Trip.objects.filter(driver=self.request.user).order_by("-created_at")
         return queryset
 
     def create(self, request, *args, **kwargs):

@@ -98,10 +98,13 @@ class TripTypeCreateSerializer(TripTypeSerializer):
 class TripSerializer(serializers.ModelSerializer):
     driver_name = serializers.SerializerMethodField(read_only=True)
     customer_name = serializers.SerializerMethodField(read_only=True)
+    car = CarSerializer(read_only=True)
+    trip_type = TripTypeSerializer(read_only=True)
 
     class Meta:
         model = Trip
         fields = "__all__"
+        read_only_fields = ("driver_name", "customer_name", "car")
 
     def get_driver_name(self, obj) -> Union[str, None]:
         if obj.driver:

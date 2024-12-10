@@ -71,7 +71,10 @@ class Trip(models.Model):
         related_name="trip_car",
     )
     alternate_phone_number = models.CharField(max_length=39, blank=True, null=True)
-    trip_type = models.ForeignKey(TripType, on_delete=models.DO_NOTHING)
+    trip_type = models.ForeignKey(
+        TripType,
+        on_delete=models.DO_NOTHING,
+    )
     trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
 
     pickup_area = models.ForeignKey(
