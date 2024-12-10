@@ -11,13 +11,13 @@ from .views.admins import (
     TripViewset,
 )
 from .views.customers import CustomerTripViewset
-from .views.drivers import DriverTripViewset
+from .views.drivers import DriverTripViewset, TripCompleteAPIView
 
 router = routers.DefaultRouter()
 # router.register(r'triptypes', TripTypeViewset, basename='trips')
 router.register(r"trips", TripViewset)
 router.register(r"customer/trips", CustomerTripViewset, basename="customer_trips")
-router.register(r"driver/trips", DriverTripViewset, basename="deriver_trips")
+router.register(r"driver/trips", DriverTripViewset, basename="driver_trips")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
@@ -28,5 +28,7 @@ urlpatterns = [
     path("triptypes/update/<int:pk>/", TripTypeUpdateView.as_view()),
     path("dashboard/", DashboardView.as_view()),
     path("dashboard/customer/", DashboardCustomerChartView.as_view()),
+    path("trip-complete/<int:pk>", TripCompleteAPIView.as_view()),
+    path("trips-paid/<int:pk>", TripCompleteAPIView.as_view()),
     path("", include(router.urls)),
 ]

@@ -1,11 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, permissions, status, viewsets
+from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 
 from keedriver.permissions import IsDriver
-from trips.models import Trip
+from trips.models import DEDUCTION_PERCENTAGE, Trip
 from trips.serializers import TripSerializer
+from wallets.models import DriverWallet, DriverWalletTransaction
 
 
 @extend_schema(
@@ -40,4 +42,60 @@ class DriverTripViewset(viewsets.ModelViewSet):
         return Response(
             {"detail": "DELETE operation is not allowed."},
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
+
+@extend_schema(tags=["Driver Trips"])
+class TripPaidAPIView(UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsDriver]
+
+    def update(self, request):
+        trip = Trip.objects.get(trip_id=request.data.get("trip_id"))
+        if trip.amount_status == "PAID":
+            return Response(
+                {"detail": "Trip already paid."},
+                status=status.HTTP_200_OK,
+            )
+        trip.amount_status = "PAID"
+        trip.save()
+        if trip.amount_status == "PAID":
+            wallet = DriverWallet.objects.get(driver=trip.driver)
+            if trip.amount is None:
+                return Response(
+                    {"detail": "Trip amount is not set."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            deduction_amount = DEDUCTION_PERCENTAGE / 100 * trip.amount
+            print(deduction_amount)
+            remaing_amount = wallet.amount - deduction_amount
+            wallet.amount = remaing_amount
+            wallet.save()
+            wallet_transaction = DriverWalletTransaction.objects.create(
+                wallet=wallet,
+                trip=trip,
+                transaction_type="DEDUCTION",
+                amount=deduction_amount,
+            )
+            wallet_transaction.save()
+
+        return Response(
+            {"detail": "Trip paid successfully."}, status=status.HTTP_200_OK
+        )
+
+
+@extend_schema(tags=["Driver Trips"])
+class TripCompleteAPIView(UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsDriver]
+
+    def create(self, request, *args, **kwargs):
+        trip = Trip.objects.get(trip_id=request.data.get("trip_id"))
+        if trip.trip_status == "COMPLETED":
+            return Response(
+                {"detail": "Trip already completed."},
+                status=status.HTTP_200_OK,
+            )
+        trip.trip_status = "COMPLETED"
+        trip.save()
+        return Response(
+            {"detail": "Trip completed successfully."}, status=status.HTTP_200_OK
         )
