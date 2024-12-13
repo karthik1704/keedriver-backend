@@ -1,6 +1,9 @@
+from os import read
+
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, permissions, status, viewsets
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 
@@ -48,6 +51,16 @@ class DriverTripViewset(viewsets.ModelViewSet):
 @extend_schema(tags=["Driver Trips"])
 class TripPaidAPIView(UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsDriver]
+    queryset = Trip.objects.all()
+    serializer_class = TripSerializer(read_only=True)
+
+    def get_object(self):
+        trip_id = self.kwargs.get("trip_id")  # Access 'trip_id' from URL
+        try:
+            trip = Trip.objects.get(trip_id=trip_id, driver=self.request.user)
+        except Trip.DoesNotExist:
+            raise NotFound(detail="Trip not found or unauthorized access.")
+        return trip
 
     def update(self, request):
         trip = Trip.objects.get(trip_id=request.data.get("trip_id"))
@@ -86,9 +99,19 @@ class TripPaidAPIView(UpdateAPIView):
 @extend_schema(tags=["Driver Trips"])
 class TripCompleteAPIView(UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsDriver]
+    queryset = Trip.objects.all()
+    serializer_class = TripSerializer(read_only=True)
 
-    def create(self, request, *args, **kwargs):
-        trip = Trip.objects.get(trip_id=request.data.get("trip_id"))
+    def get_object(self):
+        trip_id = self.kwargs.get("trip_id")  # Access 'trip_id' from URL
+        try:
+            trip = Trip.objects.get(trip_id=trip_id, driver=self.request.user)
+        except Trip.DoesNotExist:
+            raise NotFound(detail="Trip not found or unauthorized access.")
+        return trip
+
+    def update(self, request, *args, **kwargs):
+        trip = self.get_object()
         if trip.trip_status == "COMPLETED":
             return Response(
                 {"detail": "Trip already completed."},
@@ -97,5 +120,6 @@ class TripCompleteAPIView(UpdateAPIView):
         trip.trip_status = "COMPLETED"
         trip.save()
         return Response(
-            {"detail": "Trip completed successfully."}, status=status.HTTP_200_OK
+            {"detail": "Trip completed successfully."},
+            status=status.HTTP_200_OK,
         )

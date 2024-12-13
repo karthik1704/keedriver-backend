@@ -92,13 +92,11 @@ class DriverWalletTransactionListAPIView(ListAPIView):
     search_fields = ["wallet__driver__first_name", "wallet__driver__phone"]
 
     class Meta:
-        ordering = "-created_at"
+        ordering = "-id"
 
     def get_queryset(self):
         wallet = DriverWallet.objects.get(driver=self.request.user)
-        queryset = DriverWalletTransaction.objects.filter(wallet=wallet).order_by(
-            "-created_at"
-        )
+        queryset = DriverWalletTransaction.objects.filter(wallet=wallet).order_by("-id")
         return queryset
 
 
@@ -118,4 +116,4 @@ class DriverWalletTransactionDetailView(RetrieveAPIView):
     search_fields = ["wallet__driver__first_name", "wallet__driver__phone"]
 
     class Meta:
-        ordering = "-created_at"
+        ordering = "-id"
