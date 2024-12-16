@@ -150,6 +150,18 @@ class CustomerTripSerializer(serializers.ModelSerializer):
         return obj.customer.get_full_name()
 
 
+class TripStatusUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Trip
+        fields = "__all__"
+        extra_kwargs = {
+            field.name: {"read_only": True}
+            for field in Trip._meta.get_fields()
+            if field.name != "trip_status"
+        }
+
+
 ## Dashboard
 
 

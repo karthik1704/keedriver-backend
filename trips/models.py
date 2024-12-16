@@ -38,7 +38,10 @@ class TripType(MP_Node):
 
 PAYMENT_STATUS = [("NOT PAID", "Not Paid"), ("PAID", "Paid")]
 TRIP_STATUS = [
-    ("ACTIVE", "Active"),
+    ("BOOKED", "BOOKED"),
+    ("DRIVER_ASSIGNED", "Driver Assigned"),
+    ("DRIVER_EN_ROUTE", "Driver on the way"),
+    ("TRIP_STARTED", "Trip Started"),
     ("COMPLETED", "Completed"),
     ("CANCELLED", "Cancelled"),
 ]
@@ -75,7 +78,7 @@ class Trip(models.Model):
         TripType,
         on_delete=models.DO_NOTHING,
     )
-    trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
+    trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="BOOKED")
 
     pickup_area = models.ForeignKey(
         Area, on_delete=models.DO_NOTHING, blank=True, null=True

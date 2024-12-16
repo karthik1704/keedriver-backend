@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from keedriver.permissions import IsDriver
 from trips.models import DEDUCTION_PERCENTAGE, Trip
-from trips.serializers import TripSerializer
+from trips.serializers import TripSerializer, TripStatusUpdateSerializer
 from wallets.models import DriverWallet, DriverWalletTransaction
 
 
@@ -55,9 +55,9 @@ class TripPaidAPIView(UpdateAPIView):
     serializer_class = TripSerializer(read_only=True)
 
     def get_object(self):
-        trip_id = self.kwargs.get("trip_id")  # Access 'trip_id' from URL
+        trip_id = self.kwargs.get("pk")  # Access 'trip_id' from URL
         try:
-            trip = Trip.objects.get(trip_id=trip_id, driver=self.request.user)
+            trip = Trip.objects.get(id=trip_id, driver=self.request.user)
         except Trip.DoesNotExist:
             raise NotFound(detail="Trip not found or unauthorized access.")
         return trip
@@ -97,29 +97,40 @@ class TripPaidAPIView(UpdateAPIView):
 
 
 @extend_schema(tags=["Driver Trips"])
-class TripCompleteAPIView(UpdateAPIView):
+class TripStatusUpdateAPIView(UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsDriver]
     queryset = Trip.objects.all()
-    serializer_class = TripSerializer(read_only=True)
+    serializer_class = TripStatusUpdateSerializer
 
     def get_object(self):
-        trip_id = self.kwargs.get("trip_id")  # Access 'trip_id' from URL
+        trip_id = self.kwargs.get("pk")  # Get 'trip_id' from URL
+        print(trip_id)
+        print(self.request.user)
         try:
-            trip = Trip.objects.get(trip_id=trip_id, driver=self.request.user)
+            trip = Trip.objects.get(id=trip_id, driver=self.request.user)
         except Trip.DoesNotExist:
             raise NotFound(detail="Trip not found or unauthorized access.")
         return trip
 
     def update(self, request, *args, **kwargs):
         trip = self.get_object()
+        trip_status = request.data.get("trip_status")
+
+        # Check if trip is already completed
         if trip.trip_status == "COMPLETED":
             return Response(
                 {"detail": "Trip already completed."},
-                status=status.HTTP_200_OK,
+                status=status.HTTP_409_CONFLICT,
             )
-        trip.trip_status = "COMPLETED"
-        trip.save()
+
+        # Validate and save the updated trip_status using the serializer
+        serializer = self.get_serializer(
+            trip, data={"trip_status": trip_status}, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
         return Response(
-            {"detail": "Trip completed successfully."},
+            {"detail": f"Trip status updated to '{trip_status}' successfully."},
             status=status.HTTP_200_OK,
         )

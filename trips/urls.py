@@ -11,7 +11,7 @@ from .views.admins import (
     TripViewset,
 )
 from .views.customers import CustomerTripViewset
-from .views.drivers import DriverTripViewset, TripCompleteAPIView
+from .views.drivers import DriverTripViewset, TripPaidAPIView, TripStatusUpdateAPIView
 
 router = routers.DefaultRouter()
 # router.register(r'triptypes', TripTypeViewset, basename='trips')
@@ -28,7 +28,7 @@ urlpatterns = [
     path("triptypes/update/<int:pk>/", TripTypeUpdateView.as_view()),
     path("dashboard/", DashboardView.as_view()),
     path("dashboard/customer/", DashboardCustomerChartView.as_view()),
-    path("trip-complete/<int:pk>", TripCompleteAPIView.as_view()),
-    path("trips-paid/<int:pk>", TripCompleteAPIView.as_view()),
+    path("trip-status/<int:pk>", TripStatusUpdateAPIView.as_view()),
+    path("trips-paid/<int:pk>", TripPaidAPIView.as_view()),
     path("", include(router.urls)),
 ]
