@@ -20,7 +20,7 @@ class TripFilter(django_filters.FilterSet):
 
     class Meta:
         model = Trip
-        fields = ["trip_status", "amount_status", "not_trip_status"]
+        fields = ["trip_status", "amount_status", "trip_status_exclude"]
 
     def filter_not_trip_status(self, queryset, name, value):
         """
