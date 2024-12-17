@@ -100,20 +100,29 @@ class DriverWalletTransactionListAPIView(ListAPIView):
         return queryset
 
 
+class IsWalletDriver(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        print(obj)
+        print("hey")
+        wallet = DriverWallet.objects.get(id=obj.wallet)
+        return wallet.driver == request.user
+
+
 @extend_schema(
     tags=["Driver Wallet"],  # Add your custom tag here
 )
 class DriverWalletTransactionDetailView(RetrieveAPIView):
 
-    queryset = DriverWalletTransaction.objects.none()
+    queryset = DriverWalletTransaction.objects.all()
     serializer_class = DriverWalletTransactionSerializer
-    permission_classes = [permissions.IsAuthenticated, IsDriver]
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-    ]
-    filterset_fields = ["wallet__driver__first_name", "wallet__driver__phone"]
-    search_fields = ["wallet__driver__first_name", "wallet__driver__phone"]
+    permission_classes = [permissions.IsAuthenticated]
+    # filter_backends = [
+    #     DjangoFilterBackend,
+    #     filters.SearchFilter,
+    # ]
+    # filterset_fields = ["wallet__driver__first_name", "wallet__driver__phone"]
+    # search_fields = ["wallet__driver__first_name", "wallet__driver__phone"]
 
     class Meta:
         ordering = "-id"
