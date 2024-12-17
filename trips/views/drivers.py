@@ -1,5 +1,6 @@
 from os import read
 
+import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, permissions, status, viewsets
@@ -11,6 +12,21 @@ from keedriver.permissions import IsDriver
 from trips.models import DEDUCTION_PERCENTAGE, Trip
 from trips.serializers import TripSerializer, TripStatusUpdateSerializer
 from wallets.models import DriverWallet, DriverWalletTransaction
+
+
+class TripFilter(django_filters.FilterSet):
+    # Add a custom filter for excluding trips with a specific status
+    not_trip_status = django_filters.CharFilter(method="filter_not_trip_status")
+
+    class Meta:
+        model = Trip
+        fields = ["trip_status", "amount_status", "not_trip_status"]
+
+    def filter_not_trip_status(self, queryset, name, value):
+        """
+        Exclude trips with the specified trip_status.
+        """
+        return queryset.exclude(trip_status=value)
 
 
 @extend_schema(
@@ -25,7 +41,7 @@ class DriverTripViewset(viewsets.ModelViewSet):
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
-    filterset_fields = ["trip_status", "amount_status"]
+    filterset_class = TripFilter
     ordering_fields = [
         "trip_status",
     ]
