@@ -16,13 +16,13 @@ from wallets.models import DriverWallet, DriverWalletTransaction
 
 class TripFilter(django_filters.FilterSet):
     # Add a custom filter for excluding trips with a specific status
-    not_trip_status = django_filters.CharFilter(method="filter_not_trip_status")
+    trip_status_exclude = django_filters.CharFilter(method="filter_trip_status_exclude")
 
     class Meta:
         model = Trip
         fields = ["trip_status", "amount_status", "trip_status_exclude"]
 
-    def filter_not_trip_status(self, queryset, name, value):
+    def filter_trip_status_exclude(self, queryset, name, value):
         """
         Exclude trips with the specified trip_status.
         """
