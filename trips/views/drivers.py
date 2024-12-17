@@ -9,24 +9,38 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 
 from keedriver.permissions import IsDriver
-from trips.models import DEDUCTION_PERCENTAGE, Trip
+from trips.models import DEDUCTION_PERCENTAGE, TRIP_STATUS, Trip
 from trips.serializers import TripSerializer, TripStatusUpdateSerializer
 from wallets.models import DriverWallet, DriverWalletTransaction
 
 
 class TripFilter(django_filters.FilterSet):
     # Add a custom filter for excluding trips with a specific status
-    trip_status_exclude = django_filters.CharFilter(method="filter_trip_status_exclude")
+    trip_status_exclude = django_filters.MultipleChoiceFilter(
+        field_name="trip_status",
+        exclude=True,  # Exclude trips with the specified statuses
+        choices=TRIP_STATUS,  # Assuming you have choices defined
+    )
+    trip_status_include = django_filters.MultipleChoiceFilter(
+        field_name="trip_status",
+        choices=TRIP_STATUS,  # Assuming you have choices defined
+    )
 
     class Meta:
         model = Trip
-        fields = ["trip_status", "amount_status", "trip_status_exclude"]
+        fields = [
+            "trip_status",
+            "amount_status",
+            "trip_status_exclude",
+            "trip_status_include",
+        ]
 
-    def filter_trip_status_exclude(self, queryset, name, value):
-        """
-        Exclude trips with the specified trip_status.
-        """
-        return queryset.exclude(trip_status=value)
+    # def filter_trip_status_exclude(self, queryset, name, value):
+    #     """
+    #     Exclude trips with the specified trip_status.
+    #     """
+    #     statuses = value.split(",")  # Split the comma-separated list
+    #     return queryset.exclude(trip_status__in=statuses)
 
 
 @extend_schema(
