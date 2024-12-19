@@ -2,6 +2,8 @@ from typing import Union
 
 from rest_framework import serializers
 
+from accounts.models import Driver
+from accounts.serializers import CustomerSerializer, DriverSerializer
 from cars.models import Car
 from cars.serializers import CarSerializer
 
@@ -127,6 +129,8 @@ class CustomerTripSerializer(serializers.ModelSerializer):
     trip_type_id = serializers.PrimaryKeyRelatedField(
         queryset=TripType.objects.all(), source="trip_type", write_only=True
     )
+    driver = DriverSerializer(read_only=True)
+    customer = CustomerSerializer(read_only=True)
 
     class Meta:
         model = Trip

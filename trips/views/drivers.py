@@ -82,44 +82,46 @@ class DriverTripViewset(viewsets.ModelViewSet):
 class TripPaidAPIView(UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsDriver]
     queryset = Trip.objects.all()
-    serializer_class = TripSerializer(read_only=True)
 
     def get_object(self):
-        trip_id = self.kwargs.get("pk")  # Access 'trip_id' from URL
+        trip_id = self.kwargs.get("pk")  # Get 'trip_id' from URL
         try:
             trip = Trip.objects.get(id=trip_id, driver=self.request.user)
         except Trip.DoesNotExist:
             raise NotFound(detail="Trip not found or unauthorized access.")
         return trip
 
-    def update(self, request):
-        trip = Trip.objects.get(trip_id=request.data.get("trip_id"))
+    def update(self, request, *args, **kwargs):
+        trip = self.get_object()
+        if trip.trip_status != "COMPLETED":
+            return Response(
+                {"detail": "Trip already paid."},
+                status=status.HTTP_409_CONFLICT,
+            )
         if trip.amount_status == "PAID":
             return Response(
                 {"detail": "Trip already paid."},
-                status=status.HTTP_200_OK,
+                status=status.HTTP_409_CONFLICT,
             )
         trip.amount_status = "PAID"
-        trip.save()
-        if trip.amount_status == "PAID":
-            wallet = DriverWallet.objects.get(driver=trip.driver)
-            if trip.amount is None:
-                return Response(
-                    {"detail": "Trip amount is not set."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            deduction_amount = DEDUCTION_PERCENTAGE / 100 * trip.amount
-            print(deduction_amount)
-            remaing_amount = wallet.amount - deduction_amount
-            wallet.amount = remaing_amount
-            wallet.save()
-            wallet_transaction = DriverWalletTransaction.objects.create(
-                wallet=wallet,
-                trip=trip,
-                transaction_type="DEDUCTION",
-                amount=deduction_amount,
-            )
-            wallet_transaction.save()
+        trip.save(update_fields=["amount_status"])
+
+        # wallet = DriverWallet.objects.get(driver=trip.driver)
+        # if trip.amount is None:
+        #     return Response(
+        #         {"detail": "Trip amount is not set."},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
+        # deduction_amount = DEDUCTION_PERCENTAGE / 100 * trip.amount
+        # remaing_amount = wallet.amount - deduction_amount
+        # wallet.amount = remaing_amount
+        # wallet.save()
+        # DriverWalletTransaction.objects.create(
+        #     wallet=wallet,
+        #     trip=trip,
+        #     transaction_type="DEDUCTION",
+        #     amount=deduction_amount,
+        # )
 
         return Response(
             {"detail": "Trip paid successfully."}, status=status.HTTP_200_OK

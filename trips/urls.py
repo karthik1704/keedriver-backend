@@ -28,7 +28,7 @@ urlpatterns = [
     path("triptypes/update/<int:pk>/", TripTypeUpdateView.as_view()),
     path("dashboard/", DashboardView.as_view()),
     path("dashboard/customer/", DashboardCustomerChartView.as_view()),
-    path("trip-status/<int:pk>", TripStatusUpdateAPIView.as_view()),
-    path("trips-paid/<int:pk>", TripPaidAPIView.as_view()),
+    path("trip-status/<int:pk>/", TripStatusUpdateAPIView.as_view()),
+    path("trip-paid/<int:pk>/", TripPaidAPIView.as_view()),
     path("", include(router.urls)),
 ]

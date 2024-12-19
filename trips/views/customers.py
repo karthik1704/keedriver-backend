@@ -27,7 +27,7 @@ class CustomerTripViewset(viewsets.ModelViewSet):
     search_fields = ["trip_id", "customer__phone", "driver__phone"]
 
     def get_queryset(self):
-        queryset = Trip.objects.filter(customer=self.request.user)
+        queryset = Trip.objects.filter(customer=self.request.user).order_by("-id")
         return queryset
 
     def destroy(self, request, *args, **kwargs):
@@ -35,3 +35,6 @@ class CustomerTripViewset(viewsets.ModelViewSet):
             {"detail": "DELETE operation is not allowed."},
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
         )
+
+    def perform_create(self, serializer):
+        serializer.save(customer=self.request.user)
