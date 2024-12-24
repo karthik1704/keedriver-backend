@@ -1,14 +1,10 @@
 import decimal
 
-from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import slugify
-from django.utils import timezone
-from django.utils.safestring import mark_safe
-from location_field.models.plain import PlainLocationField
 from treebeard.mp_tree import MP_Node
 
-from accounts.models import Customer, Driver, MyUser
+from accounts.models import Customer, Driver
 from areas.models import Area
 from cars.models import Car
 

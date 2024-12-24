@@ -129,3 +129,14 @@ class BlockDriver(models.Model):
     blocked_user = models.ForeignKey(
         Driver, related_name="blocked_user", on_delete=models.CASCADE
     )
+
+
+class FCMToken(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="fcm_token")
+    fcm_token = models.CharField(max_length=255)
+    device_id = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.fcm_token}"
