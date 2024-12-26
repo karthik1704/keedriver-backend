@@ -9,6 +9,7 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 
 from keedriver.permissions import IsDriver
+from keedriver.utils import send_push_notification_to_user
 from trips.models import DEDUCTION_PERCENTAGE, TRIP_STATUS, Trip
 from trips.serializers import TripSerializer, TripStatusUpdateSerializer
 from wallets.models import DriverWallet, DriverWalletTransaction
@@ -161,6 +162,10 @@ class TripStatusUpdateAPIView(UpdateAPIView):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        send_push_notification_to_user(
+            request.user, "Trip Updated", f"Trip status updated to {trip_status}"
+        )
 
         return Response(
             {"detail": f"Trip status updated to '{trip_status}' successfully."},

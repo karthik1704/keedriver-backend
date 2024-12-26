@@ -14,6 +14,8 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
+import firebase_admin
+from firebase_admin import credentials
 
 # Initialise environment variables
 env = environ.Env()
@@ -270,3 +272,9 @@ TOTP_INTERVAL = 120  # 2 minutes
 WHATSAPP_API_URL = "https://graph.facebook.com/v21.0"
 WHATSAPP_ACCESS_TOKEN = env("WHATSAPP_ACCESS_TOKEN")
 WHATSAPP_PHONE_NUMBER_ID = env("WHATSAPP_PHONE_NUMBER_ID")
+
+
+# Firebase Init
+FIRE_BASE_CREDENTIALS_PATH = BASE_DIR / "firebase_cred.json"
+cred = credentials.Certificate(FIRE_BASE_CREDENTIALS_PATH)
+firebase_admin.initialize_app(cred)

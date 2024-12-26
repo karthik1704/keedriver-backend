@@ -1,4 +1,5 @@
 import datetime
+import profile
 from typing import Iterable, Optional
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -92,6 +93,9 @@ class Customer(MyUser):
 
 class CustomerProfile(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    profile_pic = models.ImageField(
+        upload_to="customer/profile_pic", blank=True, null=True
+    )
     is_business = models.BooleanField(default=False)
 
     def __str__(self):
@@ -111,6 +115,9 @@ class Driver(MyUser):
 
 class DriverProfile(models.Model):
     driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
+    profile_pic = models.ImageField(
+        upload_to="driver/profile_pic", blank=True, null=True
+    )
     address = models.TextField(blank=True, default="")
     area = models.ManyToManyField(Area, blank=True)
     license_number = models.CharField(max_length=50)
@@ -133,10 +140,10 @@ class BlockDriver(models.Model):
 
 class FCMToken(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="fcm_token")
-    fcm_token = models.CharField(max_length=255)
+    token = models.CharField(max_length=255)
     device_id = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.fcm_token}"
+        return f"{self.user.get_full_name()} - {self.token}"

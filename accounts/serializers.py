@@ -23,10 +23,20 @@ class CustomLoginSerializer(serializers.Serializer):
     otp = serializers.CharField(
         style={"input_type": "password"}, required=False, allow_blank=True
     )
+    fcm_token = serializers.CharField(required=False, allow_blank=True)
+    device_id = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = MyUser
-        fields = ["username", "phone", "password"]
+        fields = [
+            "username",
+            "phone",
+            "password",
+            "otp",
+            "role",
+            "fcm_token",
+            "device_id",
+        ]
         extra_kwargs = {"password": {"write_only": True}}
 
     def authenticate(self, **kwargs):
@@ -76,6 +86,8 @@ class CustomLoginSerializer(serializers.Serializer):
         password = attrs.get("password")
         otp = attrs.get("otp")
         role = attrs.get("role")
+        fcm_token = attrs.get("fcm_token")
+        device_id = attrs.get("device_id")
 
         # if email:
         #     user = self._validate_email(email, password)
@@ -97,6 +109,14 @@ class CustomLoginSerializer(serializers.Serializer):
             raise exceptions.ValidationError(msg)
 
         attrs["user"] = user
+        if fcm_token and device_id:
+            from .models import FCMToken  # Import your model here
+
+            FCMToken.objects.update_or_create(
+                user=user,
+                device_id=device_id,
+                defaults={"token": fcm_token},
+            )
         return attrs
 
 
