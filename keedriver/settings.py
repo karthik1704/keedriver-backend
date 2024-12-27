@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     "rangefilter",
     "django_prose_editor",
     "django_flatpickr",
+    "storages",
     # apps
     "accounts.apps.AccountsConfig",
     "cars",
@@ -194,8 +196,8 @@ STATIC_URL = "/static/"
 
 # Base url to serve media files
 MEDIA_URL = "/media/"
-# Path where media is stored
-MEDIA_ROOT = BASE_DIR / "media/"
+# # Path where media is stored
+# MEDIA_ROOT = BASE_DIR / "media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -278,3 +280,34 @@ WHATSAPP_PHONE_NUMBER_ID = env("WHATSAPP_PHONE_NUMBER_ID")
 FIRE_BASE_CREDENTIALS_PATH = BASE_DIR / "firebase_cred.json"
 cred = credentials.Certificate(FIRE_BASE_CREDENTIALS_PATH)
 firebase_admin.initialize_app(cred)
+
+
+# AWS
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")  # from environment
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")  # from environment
+AWS_STORAGE_BUCKET_NAME = env("AWS_BUCKET_NAME")
+AWS_S3_REGION_NAME = env("AWS_REGION")  # e.g., 'us-east-1'
+
+print(env("AWS_ACCESS_KEY_ID"))
+# Media files
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+
+# Media URL for accessing files in the browser
+AWS_S3_CUSTOM_DOMAIN = env("AWS_BUCKET_URL")
+MEDIA_URL = env("AWS_BUCKET_URL")
+print(MEDIA_URL)
+# Optional: Set Cache-Control headers for better performance
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",  # Cache for one day
+}
+
+# Optional: Configure default ACL for uploaded files (public or private)
+AWS_DEFAULT_ACL = None  # None to avoid public access

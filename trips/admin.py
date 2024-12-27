@@ -22,6 +22,7 @@ from treebeard.admin import TreeAdmin
 from treebeard.forms import MoveNodeForm, movenodeform_factory
 
 from accounts.models import Customer, MyUser
+from keedriver.utils import send_push_notification_to_user
 from reviews.models import Review
 from wallets.models import DriverWalletTransaction
 
@@ -300,7 +301,16 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
 
         if change:
             if form.initial["amount_status"] != form.cleaned_data["amount_status"]:
+                if amount_status == "PAID":
+                    send_push_notification_to_user(
+                        obj.driver, "Amount Paid", "Amount has been paid for the trip"
+                    )
                 update_fields.append("amount_status")
+
+            if form.initial["trip_status"] != form.cleaned_data["trip_status"]:
+                send_push_notification_to_user(
+                    obj.driver, f"TRIP {trip_status}", "Trip has been {trip_status}"
+                )
 
         super().save_model(request, obj, form, change)
         obj.save(update_fields=update_fields)

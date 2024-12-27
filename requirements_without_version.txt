@@ -31,3 +31,5 @@ django-admin-rangefilter
 django-flatpickr
 requests
 firebase-admin
+boto3
+django-storages
