@@ -309,7 +309,7 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
 
             if form.initial["trip_status"] != form.cleaned_data["trip_status"]:
                 send_push_notification_to_user(
-                    obj.driver, f"TRIP {trip_status}", "Trip has been {trip_status}"
+                    obj.driver, f"TRIP {trip_status}", f"Trip has been {trip_status}"
                 )
 
         super().save_model(request, obj, form, change)
