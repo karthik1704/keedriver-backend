@@ -33,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-1-2kfp%+^+7h@d$#bj(c$7d%t+01taskh-$647e#!s3=!76_qv"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -309,7 +309,6 @@ STORAGES = {
 # Media URL for accessing files in the browser
 AWS_S3_CUSTOM_DOMAIN = env("AWS_BUCKET_URL")
 MEDIA_URL = env("AWS_BUCKET_URL")
-print(MEDIA_URL)
 # Optional: Set Cache-Control headers for better performance
 AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": "max-age=86400",  # Cache for one day
