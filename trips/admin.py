@@ -10,6 +10,7 @@ from django.forms import BaseInlineFormSet, ModelChoiceField
 from django.http import HttpResponseRedirect
 from django.http.request import HttpRequest
 from django.utils import timezone
+from django_flatpickr.widgets import DatePickerInput, DateTimePickerInput
 from import_export import resources
 from import_export.admin import ExportActionMixin, ExportMixin, ImportExportModelAdmin
 from import_export.fields import Field
@@ -21,6 +22,7 @@ from treebeard.admin import TreeAdmin
 from treebeard.forms import MoveNodeForm, movenodeform_factory
 
 from accounts.models import Customer, MyUser
+from keedriver.utils import send_push_notification_to_user
 from reviews.models import Review
 from wallets.models import DriverWalletTransaction
 
@@ -66,6 +68,7 @@ class TripForm(forms.ModelForm):
                     "trip_parent_type",
                 ],
             ),
+            # "pickup_time": DateTimePickerInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -80,7 +83,7 @@ class TripForm(forms.ModelForm):
             local_trip = TripType.objects.all().first()
             if local_trip:
                 self.fields["trip_parent_type"].initial = local_trip.id
-                child_trip = local_trip.get_children().first()
+                child_trip = local_trip.get_children().last()
                 self.fields["trip_type"].initial = child_trip.id
         self.fields["driver_based_on_loaction"].initial = True
 
@@ -246,6 +249,10 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
             {"fields": ("driver", "driver_based_on_loaction")},
         ),
         (
+            "Car Details",
+            {"fields": ("car",)},
+        ),
+        (
             "Payment Details / Status",
             {"fields": ("amount", "amount_status", "trip_status")},
         ),
@@ -294,7 +301,16 @@ class TripAdmin(ExportActionMixin, ExportMixin, admin.ModelAdmin):
 
         if change:
             if form.initial["amount_status"] != form.cleaned_data["amount_status"]:
+                if amount_status == "PAID":
+                    send_push_notification_to_user(
+                        obj.driver, "Amount Paid", "Amount has been paid for the trip"
+                    )
                 update_fields.append("amount_status")
+
+            if form.initial["trip_status"] != form.cleaned_data["trip_status"]:
+                send_push_notification_to_user(
+                    obj.driver, f"TRIP {trip_status}", f"Trip has been {trip_status}"
+                )
 
         super().save_model(request, obj, form, change)
         obj.save(update_fields=update_fields)

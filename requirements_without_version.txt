@@ -1,0 +1,35 @@
+########################################################################################
+# WARNING
+# ======================================================================================
+# Only use this file if you are sure about what you are doing.
+# This file is used to install the latest version of the dependencies.
+# Please add new dependencies without version in here.
+########################################################################################  
+
+dj-rest-auth
+Django
+django-filter 
+django-treebeard
+djangorestframework
+django-autocomplete-light
+djangorestframework-simplejwt
+Markdown
+gunicorn
+Pillow
+psycopg
+django-cors-headers
+django-location-field
+drf-spectacular
+django-map-widgets
+django-import-export
+django-prose-editor
+nh3
+pyotp
+django-environ
+django-import-export
+django-admin-rangefilter
+django-flatpickr
+requests
+firebase-admin
+boto3
+django-storages

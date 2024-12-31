@@ -1,4 +1,5 @@
 import datetime
+import profile
 from typing import Iterable, Optional
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -86,9 +87,15 @@ class Customer(MyUser):
         self.is_customer = True
         super().save(*args, **kwargs)
 
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name if self.last_name else ''} - {self.phone}"
+
 
 class CustomerProfile(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    profile_pic = models.ImageField(
+        upload_to="customer/profile_pic", blank=True, null=True
+    )
     is_business = models.BooleanField(default=False)
 
     def __str__(self):
@@ -108,12 +115,15 @@ class Driver(MyUser):
 
 class DriverProfile(models.Model):
     driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
+    profile_pic = models.ImageField(
+        upload_to="driver/profile_pic", blank=True, null=True
+    )
     address = models.TextField(blank=True, default="")
     area = models.ManyToManyField(Area, blank=True)
     license_number = models.CharField(max_length=50)
     license_expiry_date = models.DateField()
     aadhaar_number = models.CharField(max_length=20, null=True, blank=True)
-    is_avaliable = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=False)
 
     def __str__(self):
         return self.driver.get_full_name()
@@ -126,3 +136,14 @@ class BlockDriver(models.Model):
     blocked_user = models.ForeignKey(
         Driver, related_name="blocked_user", on_delete=models.CASCADE
     )
+
+
+class FCMToken(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="fcm_token")
+    token = models.CharField(max_length=255)
+    device_id = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.token}"

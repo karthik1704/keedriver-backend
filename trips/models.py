@@ -1,15 +1,12 @@
 import decimal
 
-from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import slugify
-from django.utils import timezone
-from django.utils.safestring import mark_safe
-from location_field.models.plain import PlainLocationField
 from treebeard.mp_tree import MP_Node
 
-from accounts.models import Customer, Driver, MyUser
+from accounts.models import Customer, Driver
 from areas.models import Area
+from cars.models import Car
 
 
 # Create your models here.
@@ -37,7 +34,10 @@ class TripType(MP_Node):
 
 PAYMENT_STATUS = [("NOT PAID", "Not Paid"), ("PAID", "Paid")]
 TRIP_STATUS = [
-    ("ACTIVE", "Active"),
+    ("BOOKED", "BOOKED"),
+    ("DRIVER_ASSIGNED", "Driver Assigned"),
+    ("DRIVER_EN_ROUTE", "Driver on the way"),
+    ("TRIP_STARTED", "Trip Started"),
     ("COMPLETED", "Completed"),
     ("CANCELLED", "Cancelled"),
 ]
@@ -62,12 +62,29 @@ class Trip(models.Model):
         blank=True,
         null=True,
     )
+    car = models.ForeignKey(
+        Car,
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        related_name="trip_car",
+    )
     alternate_phone_number = models.CharField(max_length=39, blank=True, null=True)
-    trip_type = models.ForeignKey(TripType, on_delete=models.DO_NOTHING)
-    trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="ACTIVE")
+    trip_type = models.ForeignKey(
+        TripType,
+        on_delete=models.DO_NOTHING,
+    )
+    trip_status = models.CharField(choices=TRIP_STATUS, max_length=25, default="BOOKED")
 
-    pickup_area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
+    pickup_area = models.ForeignKey(
+        Area, on_delete=models.DO_NOTHING, blank=True, null=True
+    )
     pickup_location = models.CharField(max_length=255, blank=True, null=True)
+
+    from_lat = models.FloatField(blank=True, null=True)
+    to_lat = models.FloatField(blank=True, null=True)
+    from_lng = models.FloatField(blank=True, null=True)
+    to_lng = models.FloatField(blank=True, null=True)
 
     pickup_time = models.DateTimeField(blank=True, null=True)
     drop_location = models.CharField(max_length=255, blank=True, null=True)
