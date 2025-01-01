@@ -38,7 +38,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "3.110.169.239:8000",
+    "3.110.169.239",
     # "api.keedriver.com",
     # "crm.keedriver.com",
     # "www.crm.keedriver.com",
