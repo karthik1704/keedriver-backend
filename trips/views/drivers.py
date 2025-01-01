@@ -83,6 +83,7 @@ class DriverTripViewset(viewsets.ModelViewSet):
 class TripPaidAPIView(UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsDriver]
     queryset = Trip.objects.all()
+    serializer_class = TripSerializer
 
     def get_object(self):
         trip_id = self.kwargs.get("pk")  # Get 'trip_id' from URL
