@@ -38,8 +38,6 @@ DEBUG = False
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "65.0.184.137",
-    "43.205.194.9",
     "3.110.169.239",
     "api.keedriver.com",
     "crm.keedriver.com",
@@ -294,7 +292,6 @@ AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")  # from environment
 AWS_STORAGE_BUCKET_NAME = env("AWS_BUCKET_NAME")
 AWS_S3_REGION_NAME = env("AWS_REGION")  # e.g., 'us-east-1'
 
-print(env("AWS_ACCESS_KEY_ID"))
 # Media files
 STORAGES = {
     "default": {
